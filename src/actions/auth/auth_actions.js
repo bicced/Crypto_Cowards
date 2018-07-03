@@ -1,9 +1,11 @@
 import {
   AUTHENTICATED_STAFF,
   AUTHENTICATION_LOADED,
+  UNAUTHENTICATED_STAFF,
   SAVE_STAFF_PROFILE,
   SAVE_CORPORATION_PROFILE,
   LOCATION_FORWARDING,
+  REMOVE_STAFF_PROFILE,
 } from '../action_types'
 
 // authenticate the staff member's account
@@ -25,6 +27,16 @@ export const authenticationLoaded = () => {
     })
   }
 }
+
+// unauthenticate the staff members' account
+export const unauthenticateStaff = () => {
+  return (dispatch) => {
+    dispatch({
+      type: UNAUTHENTICATED_STAFF
+    })
+  }
+}
+
 
 // save staff profile to redux
 export const saveStaffProfileToRedux = (staffProfile) => {
@@ -53,4 +65,14 @@ export const forwardUrlLocation = (url) => {
       payload: url,
     })
   }
+}
+
+// remove the staff members' profile
+export const removeStaffProfile = () => {
+	return (dispatch) => {
+    localStorage.removeItem('cognito_staff_token')
+		dispatch({
+			type: REMOVE_STAFF_PROFILE,
+		})
+	}
 }

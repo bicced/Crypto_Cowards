@@ -89,3 +89,15 @@ export function registerGoogleLoginWithCognito(accessToken) {
    })
   return p
 }
+
+export const signOutLandlord = () => {
+	const p = new Promise((res, rej) => {
+		const cognitoUser = staffPool.getCurrentUser()
+		if (cognitoUser) {
+			cognitoUser.signOut()
+		} else {
+      localStorage.clear()
+    }
+	})
+	return p
+}
