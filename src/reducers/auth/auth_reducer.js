@@ -1,9 +1,11 @@
 import {
   AUTHENTICATED_STAFF,
   AUTHENTICATION_LOADED,
+  UNAUTHENTICATED_STAFF,
   SAVE_STAFF_PROFILE,
   SAVE_CORPORATION_PROFILE,
   LOCATION_FORWARDING,
+  REMOVE_STAFF_PROFILE,
 } from '../../actions/action_types'
 
 const INITIAL_STATE = {
@@ -42,6 +44,12 @@ export default (state = INITIAL_STATE, action) => {
         ...state,
         authentication_loaded: true,
       }
+    case UNAUTHENTICATED_STAFF:
+      return {
+        ...state,
+        staff_profile: {},
+        authenticated: false,
+      }
     case SAVE_STAFF_PROFILE:
       localStorage.setItem('staff_id', action.payload.staff_id)
       return {
@@ -57,6 +65,13 @@ export default (state = INITIAL_STATE, action) => {
       return {
         ...state,
         location_forwarding: action.payload,
+      }
+    case REMOVE_STAFF_PROFILE:
+      localStorage.removeItem('user_id')
+      return {
+        ...state,
+        staff_profile: {},
+        corporation_profile: {},
       }
     default:
       return {
