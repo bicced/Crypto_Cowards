@@ -4,14 +4,13 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
-import { retrieveStaffFromLocalStorage } from '../api/aws/aws-cognito'
+import { retrieveUserFromLocalStorage } from '../api/aws/aws-cognito'
 import { dispatchActionsToRedux } from '../actions/system/system_actions'
 import {
-	saveStaffProfileToRedux,
-	authenticateStaff,
+	saveUserProfileToRedux,
+	authenticateUser,
 	authenticationLoaded,
 	forwardUrlLocation,
-	saveCorporationProfileToRedux,
 } from '../actions/auth/auth_actions'
 import { saveLoadingCompleteToRedux } from '../actions/app/app_actions'
 import {
@@ -20,8 +19,7 @@ import {
 	checkIfPartOfRoutes,
 } from '../api/general/general_api'
 import {
-	getStaffProfile,
-	getCorporationProfile,
+	getUserProfile,
 } from '../api/auth/auth_api'
 
 
@@ -31,25 +29,25 @@ export default (ComposedComponent) => {
 	class AppRootMechanics extends Component {
 
     componentWillMount() {
-			// check if staff is already authenticated
-			this.checkIfStaffLoggedIn()
+			// check if user is already authenticated
+			this.checkIfUserLoggedIn()
 
 			// do stuff based on the URL
 			this.executeOnURL()
     }
 
-		checkIfStaffLoggedIn() {
-			// grab the url that was given, will be used in this,saveStaffProfileToRedux()
+		checkIfUserLoggedIn() {
+			// grab the url that was given, will be used in this,saveUserProfileToRedux()
 			let location = this.props.location.pathname + this.props.location.search + this.props.location.hash
 			if (location === '/login') {
 				location = '/'
 			}
-			retrieveStaffFromLocalStorage()
-				.then((staff) => {
-					console.log(staff)
+			retrieveUserFromLocalStorage()
+				.then((user) => {
+					console.log(user)
 					console.log('kz trippin balls')
 					console.log(location)
-					return getStaffProfile(staff.IdentityId, {})
+					return getUserProfile(user.IdentityId, {})
 				})
 				.then((data) => {
 					console.log(data)
@@ -59,7 +57,7 @@ export default (ComposedComponent) => {
 					// if they have, then we'll auto log them in
 					this.props.history.push(location)
 					this.props.authenticationLoaded()
-					return this.saveStaffProfileToRedux(data.profile, location)
+					return this.saveUserProfileToRedux(data.profile, location)
 				})
 				.catch((err) => {
 					// if not then we do nothing
@@ -67,28 +65,16 @@ export default (ComposedComponent) => {
 					console.log(err)
 					this.props.forwardUrlLocation(location)
 					this.props.history.push(location)
-					this.props.authenticateStaff(null)
+					this.props.authenticateUser(null)
 					this.props.authenticationLoaded()
 				})
 		}
 
-		saveStaffProfileToRedux(staff, location) {
+		saveUserProfileToRedux(user, location) {
 			let app_location = location
-			this.props.saveStaffProfileToRedux(staff)
-			this.props.authenticateStaff(staff)
-
-			return getCorporationProfile(staff.corporation_id)
-				.then((corp) => {
-					if (corp === '') {
-						console.log('corp is nth nigga')
-						this.props.saveCorporationProfileToRedux({})
-						app_location = '/app/registration'
-						this.props.history.push('/app/registration')
-					} else {
-						this.props.saveCorporationProfileToRedux(corp)
-						return this.grabAllInitialData(corp.corporation_id)
-					}
-				})
+			this.props.saveUserProfileToRedux(user)
+			this.props.authenticateUser(user)
+			return this.grabAllInitialData(user.user_id)
 				.then((results) => {
 					console.log(results)
 					this.props.saveLoadingCompleteToRedux()
@@ -100,7 +86,7 @@ export default (ComposedComponent) => {
 				})
 		}
 
-		grabAllInitialData(corporation_id) {
+		grabAllInitialData(id) {
 			const initials = [
 
 			]
@@ -138,9 +124,8 @@ export default (ComposedComponent) => {
   AppRootMechanics.propTypes = {
   	history: PropTypes.object.isRequired,
 		forwardUrlLocation: PropTypes.func.isRequired,
-		saveStaffProfileToRedux: PropTypes.func.isRequired,
-		authenticateStaff: PropTypes.func.isRequired,
-		saveCorporationProfileToRedux: PropTypes.func.isRequired,
+		saveUserProfileToRedux: PropTypes.func.isRequired,
+		authenticateUser: PropTypes.func.isRequired,
 		dispatchActionsToRedux: PropTypes.func.isRequired,
 		saveLoadingCompleteToRedux: PropTypes.func.isRequired,
 		authenticationLoaded: PropTypes.func.isRequired,
@@ -161,9 +146,8 @@ export default (ComposedComponent) => {
 	return withRouter(
 		connect(mapStateToProps, {
 			forwardUrlLocation,
-			saveStaffProfileToRedux,
-			authenticateStaff,
-			saveCorporationProfileToRedux,
+			saveUserProfileToRedux,
+			authenticateUser,
 			dispatchActionsToRedux,
 			saveLoadingCompleteToRedux,
 			authenticationLoaded,

@@ -1,24 +1,23 @@
 import {
-  AUTHENTICATED_STAFF,
+  AUTHENTICATED_USER,
   AUTHENTICATION_LOADED,
-  UNAUTHENTICATED_STAFF,
-  SAVE_STAFF_PROFILE,
-  SAVE_CORPORATION_PROFILE,
+  UNAUTHENTICATED_USER,
+  SAVE_USER_PROFILE,
   LOCATION_FORWARDING,
-  REMOVE_STAFF_PROFILE,
+  REMOVE_USER_PROFILE,
 } from '../action_types'
 
-// authenticate the staff member's account
-export const authenticateStaff = (staffProfile) => {
+// authenticate the user member's account
+export const authenticateUser = (userProfile) => {
   return (dispatch) => {
     dispatch({
-      type: AUTHENTICATED_STAFF,
-      payload: staffProfile,
+      type: AUTHENTICATED_USER,
+      payload: userProfile,
     })
   }
 }
 
-// authentication loaded, this will be called when the staff profile has been loaded either successfully or unsuccessfully
+// authentication loaded, this will be called when the user profile has been loaded either successfully or unsuccessfully
 export const authenticationLoaded = () => {
   return (dispatch) => {
     dispatch({
@@ -28,35 +27,26 @@ export const authenticationLoaded = () => {
   }
 }
 
-// unauthenticate the staff members' account
-export const unauthenticateStaff = () => {
+// unauthenticate the user members' account
+export const unauthenticateUser = () => {
   return (dispatch) => {
     dispatch({
-      type: UNAUTHENTICATED_STAFF
+      type: UNAUTHENTICATED_USER
     })
   }
 }
 
 
-// save staff profile to redux
-export const saveStaffProfileToRedux = (staffProfile) => {
+// save user profile to redux
+export const saveUserProfileToRedux = (userProfile) => {
   return (dispatch) => {
     dispatch({
-      type: SAVE_STAFF_PROFILE,
-      payload: staffProfile,
+      type: SAVE_USER_PROFILE,
+      payload: userProfile,
     })
   }
 }
 
-// save corporation profile to redux
-export const saveCorporationProfileToRedux = (corpProfile) => {
-  return (dispatch) => {
-    dispatch({
-      type: SAVE_CORPORATION_PROFILE,
-      payload: corpProfile,
-    })
-  }
-}
 
 export const forwardUrlLocation = (url) => {
   return (dispatch) => {
@@ -67,12 +57,12 @@ export const forwardUrlLocation = (url) => {
   }
 }
 
-// remove the staff members' profile
-export const removeStaffProfile = () => {
+// remove the user members' profile
+export const removeUserProfile = () => {
 	return (dispatch) => {
-    localStorage.removeItem('cognito_staff_token')
+    localStorage.removeItem('cognito_user_token')
 		dispatch({
-			type: REMOVE_STAFF_PROFILE,
+			type: REMOVE_USER_PROFILE,
 		})
 	}
 }

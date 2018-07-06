@@ -18,7 +18,7 @@ class RegistrationHome extends Component {
 		return (
 			<div id='RegistrationHome' style={comStyles().container}>
 				<div style={comStyles().mainContainer}>
-					<h2>{`Hello, ${this.props.staff_profile.first_name}, welcome to RentHero. Please start by giving me some information about your business name!`}</h2>
+					<h2>{`Hello, ${this.props.user_profile.first_name}, welcome to RentHero. Please start by giving me some information about your business name!`}</h2>
 
 				</div>
 			</div>
@@ -29,7 +29,7 @@ class RegistrationHome extends Component {
 // defines the types of variables in this.props
 RegistrationHome.propTypes = {
 	history: PropTypes.object.isRequired,
-	staff_profile: PropTypes.object.isRequired,
+	user_profile: PropTypes.object.isRequired,
 }
 
 // for all optional props, define a default value
@@ -43,7 +43,7 @@ const RadiumHOC = Radium(RegistrationHome)
 // Get access to state from the Redux store
 const mapReduxToProps = (redux) => {
 	return {
-		staff_profile: redux.auth.staff_profile,
+		user_profile: redux.auth.user_profile,
 	}
 }
 

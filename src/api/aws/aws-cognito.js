@@ -4,11 +4,11 @@
 import uuid from 'uuid'
 import AWS from 'aws-sdk/global'
 import { CognitoUserPool, CognitoUserAttribute, CognitoUser, AuthenticationDetails, CognitoIdentityCredentials, WebIdentityCredentials } from 'amazon-cognito-identity-js';
-import { staffPool, STAFF_USERPOOL_ID, generate_LANDLORD_IDENTITY_POOL_ID } from './aws-profile'
+import { userPool, USER_USERPOOL_ID, generate_LANDLORD_IDENTITY_POOL_ID } from './aws-profile'
 // import AWS_CognitoIdentity from 'aws-sdk/clients/cognitoidentity'
 // import AWS_CognitoSyncManager from 'aws-sdk/clients/cognitosync'
 
-export const retrieveStaffFromLocalStorage = () => {
+export const retrieveUserFromLocalStorage = () => {
   const p = new Promise((res, rej) => {
     const x = localStorage.getItem('login_token')
     if (x) {
@@ -20,7 +20,7 @@ export const retrieveStaffFromLocalStorage = () => {
       } else if (login_token.type === 'google') {
         loginsObj = { 'accounts.google.com': login_token.accessToken }
       } else if (login_token.type === 'cognito') {
-        loginsObj = { [STAFF_USERPOOL_ID]: login_token.accessToken }
+        loginsObj = { [USER_USERPOOL_ID]: login_token.accessToken }
       }
       if (login_token) {
         AWS.config.credentials = new AWS.CognitoIdentityCredentials({
@@ -92,7 +92,7 @@ export function registerGoogleLoginWithCognito(accessToken) {
 
 export const signOutLandlord = () => {
 	const p = new Promise((res, rej) => {
-		const cognitoUser = staffPool.getCurrentUser()
+		const cognitoUser = userPool.getCurrentUser()
 		if (cognitoUser) {
 			cognitoUser.signOut()
 		} else {

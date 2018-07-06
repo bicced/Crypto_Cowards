@@ -5,15 +5,15 @@ import { connect } from 'react-redux'
 import Radium from 'radium'
 import PropTypes from 'prop-types'
 import { withRouter } from 'react-router-dom'
-import { unauthenticateStaff, removeStaffProfile } from '../../actions/auth/auth_actions'
+import { unauthenticateUser, removeUserProfile } from '../../actions/auth/auth_actions'
 import { signOutLandlord } from '../../api/aws/aws-cognito'
 
 
 class Logout extends Component {
 
 	componentWillMount() {
-		this.props.unauthenticateStaff()
-		this.props.removeStaffProfile()
+		this.props.unauthenticateUser()
+		this.props.removeUserProfile()
 		signOutLandlord()
 		this.props.history.push('/login')
 	}
@@ -35,8 +35,8 @@ const RadiumHOC = Radium(Logout);
 
 export default withRouter(
 	connect(null, {
-		unauthenticateStaff,
-		removeStaffProfile,
+		unauthenticateUser,
+		removeUserProfile,
 	})(RadiumHOC)
 )
 

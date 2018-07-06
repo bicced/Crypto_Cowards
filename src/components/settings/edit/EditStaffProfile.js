@@ -17,17 +17,17 @@ import {
 } from 'antd'
 import { phoneLookup } from '../../../api/comms/comms_api'
 import { validateEmail } from '../../../api/general/general_api'
-import { updateStaffProfile } from '../../../api/staff/staff_api'
-import { getStaffProfile } from '../../../api/google/google_api'
-import { setStaffProfile } from '../../../actions/auth/auth_actions'
+import { updateUserProfile } from '../../../api/user/user_api'
+import { getUserProfile } from '../../../api/google/google_api'
+import { setUserProfile } from '../../../actions/auth/auth_actions'
 
-class EditStaffProfile extends Component {
+class EditUserProfile extends Component {
 
   constructor() {
     super()
     this.state = {
-      staff_id: '',
-      staff_profile: {},
+      user_id: '',
+      user_profile: {},
 
       first_name: '',
       last_name: '',
@@ -40,46 +40,46 @@ class EditStaffProfile extends Component {
   }
 
   componentWillMount() {
-    const staff_id_loc = this.props.location.pathname.indexOf('/app/settings/')
-    const staff_id_loc_end = this.props.location.pathname.indexOf('/staff/edit')
-    const staff_id = this.props.location.pathname.slice(staff_id_loc + 14, staff_id_loc_end)
-    console.log(staff_id)
+    const user_id_loc = this.props.location.pathname.indexOf('/app/settings/')
+    const user_id_loc_end = this.props.location.pathname.indexOf('/user/edit')
+    const user_id = this.props.location.pathname.slice(user_id_loc + 14, user_id_loc_end)
+    console.log(user_id)
 
     this.setState({
-      staff_id: staff_id,
+      user_id: user_id,
     })
 
     if (this.props.loading_complete) {
-      this.refreshStaff(staff_id)
+      this.refreshUser(user_id)
     }
   }
 
   componentWillReceiveProps(nextProps) {
-    if (this.props.staff_profile !== nextProps.staff_profile) {
-      this.refreshStaff(this.state.staff_id)
+    if (this.props.user_profile !== nextProps.user_profile) {
+      this.refreshUser(this.state.user_id)
     }
   }
 
-  refreshStaff(staff_id) {
-    if (staff_id !== this.props.staff_profile.staff_id) {
+  refreshUser(user_id) {
+    if (user_id !== this.props.user_profile.user_id) {
       this.props.history.push('/invalid')
     } else {
       this.setState({
-        staff_profile: this.props.staff_profile,
-        first_name: this.props.staff_profile.first_name,
-        last_name: this.props.staff_profile.last_name,
-        email: this.props.staff_profile.email,
-        phone: this.props.staff_profile.phone,
+        user_profile: this.props.user_profile,
+        first_name: this.props.user_profile.first_name,
+        last_name: this.props.user_profile.last_name,
+        email: this.props.user_profile.email,
+        phone: this.props.user_profile.phone,
         loading: false,
       })
     }
   }
 
   determineIfChanged() {
-    return this.props.staff_profile.first_name !== this.state.first_name ||
-           this.props.staff_profile.last_name !== this.state.last_name ||
-           this.props.staff_profile.email !== this.state.email ||
-           this.props.staff_profile.phone !== this.state.phone
+    return this.props.user_profile.first_name !== this.state.first_name ||
+           this.props.user_profile.last_name !== this.state.last_name ||
+           this.props.user_profile.email !== this.state.email ||
+           this.props.user_profile.phone !== this.state.phone
   }
 
   verifyEmail() {
@@ -119,26 +119,26 @@ class EditStaffProfile extends Component {
     return p
   }
 
-  updateStaff(state) {
+  updateUser(state) {
     this.setState({
       saving: true,
     })
     if (this.verifyEmail()) {
       this.verifyPhone()
       .then(() => {
-        updateStaffProfile({
-          staff_id: this.props.staff_profile.staff_id,
+        updateUserProfile({
+          user_id: this.props.user_profile.user_id,
           first_name: state.first_name,
           last_name: state.last_name,
           email: state.email,
           phone: this.state.phone,
-          staff_title: this.props.staff_profile.staff_title,
+          user_title: this.props.user_profile.user_title,
         })
         .then((data) => {
-          return getStaffProfile(this.props.staff_profile.staff_id)
+          return getUserProfile(this.props.user_profile.user_id)
         })
         .then((data) => {
-          this.props.setStaffProfile(data.profile)
+          this.props.setUserProfile(data.profile)
           this.setState({
             saving: false,
           })
@@ -211,13 +211,13 @@ class EditStaffProfile extends Component {
 
 	render() {
 		return (
-			<div id='EditStaffProfile' style={comStyles().container}>
+			<div id='EditUserProfile' style={comStyles().container}>
         <Card id='DetailsContainer' style={comStyles().mainContainer} bordered={false}>
           {
-            !this.state.loading && this.state.staff_profile && this.state.staff_profile.staff_id
+            !this.state.loading && this.state.user_profile && this.state.user_profile.user_id
             ?
             <div>
-              <h2>{`${this.state.staff_profile.first_name} Details`}</h2>
+              <h2>{`${this.state.user_profile.first_name} Details`}</h2>
               <div style={comStyles().backText} onClick={() => this.props.history.push(`/app/settings`)}>
                 <Icon type='left' />
                 <p style={{ paddingLeft: '10px', marginBottom: 0, }}>{`Back to Settings`}</p>
@@ -241,7 +241,7 @@ class EditStaffProfile extends Component {
                 style={comStyles().saveButton}
                 loading={this.state.saving}
                 disabled={this.state.saving}
-                onClick={() => this.updateStaff(this.state)}
+                onClick={() => this.updateUser(this.state)}
               >
                 SAVE
               </Button>
@@ -263,26 +263,26 @@ class EditStaffProfile extends Component {
 }
 
 // defines the types of variables in this.props
-EditStaffProfile.propTypes = {
+EditUserProfile.propTypes = {
 	history: PropTypes.object.isRequired,
-  staff_profile: PropTypes.object.isRequired,
+  user_profile: PropTypes.object.isRequired,
   corporation_profile: PropTypes.object.isRequired,
   loading_complete: PropTypes.bool.isRequired,
-  setStaffProfile: PropTypes.func.isRequired,
+  setUserProfile: PropTypes.func.isRequired,
 }
 
 // for all optional props, define a default value
-EditStaffProfile.defaultProps = {
+EditUserProfile.defaultProps = {
 
 }
 
 // Wrap the prop in Radium to allow JS styling
-const RadiumHOC = Radium(EditStaffProfile)
+const RadiumHOC = Radium(EditUserProfile)
 
 // Get access to state from the Redux store
 const mapReduxToProps = (redux) => {
 	return {
-    staff_profile: redux.auth.staff_profile,
+    user_profile: redux.auth.user_profile,
     corporation_profile: redux.auth.corporation_profile,
     loading_complete: redux.app.loading_complete,
 	}
@@ -291,7 +291,7 @@ const mapReduxToProps = (redux) => {
 // Connect together the Redux store with this React component
 export default withRouter(
 	connect(mapReduxToProps, {
-    setStaffProfile,
+    setUserProfile,
 	})(RadiumHOC)
 )
 
