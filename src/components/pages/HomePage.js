@@ -14,8 +14,8 @@ import {
 import SubtitlesMachine from '../modules/SubtitlesMachine'
 import { GOOGLE_CLIENT_AUTH_CREDS } from '../../api/ENV_CREDS'
 import { registerGoogleLoginWithCognito } from '../../api/aws/aws-cognito'
-import { getStaffProfile } from '../../api/auth/auth_api'
-import { authenticateStaff, saveStaffProfileToRedux } from '../../actions/auth/auth_actions'
+import { getUserProfile } from '../../api/auth/auth_api'
+import { authenticateUser, saveUserProfileToRedux } from '../../actions/auth/auth_actions'
 
 class HomePage extends Component {
 
@@ -65,16 +65,16 @@ class HomePage extends Component {
         })
         .then(({ IdentityId }) => {
           console.log('LOGGED INTO GMAIL', IdentityId)
-          return getStaffProfile(IdentityId, profile)
+          return getUserProfile(IdentityId, profile)
         })
         .then((data) => {
           console.log(data)
-          self.props.authenticateStaff('something')
-          self.props.saveStaffProfileToRedux(data.profile)
+          self.props.authenticateUser('something')
+          self.props.saveUserProfileToRedux(data.profile)
           if (data.new_entry) {
-            self.props.history.push('/onboarding/checkstaff')
+            self.props.history.push('/onboarding/checkuser')
           } else {
-            // self.props.history.push('/onboarding/checkstaff')
+            // self.props.history.push('/onboarding/checkuser')
             self.props.history.push('/app/ads')
             setTimeout(() => {
               window.location.reload()
@@ -102,7 +102,7 @@ class HomePage extends Component {
 	render() {
 		return (
 			<div id='HomePage' style={comStyles().container}>
-				<div style={comStyles().font_logo}>RentHero</div>
+				<div style={comStyles().font_logo}>CryptoCowards</div>
 				<div style={comStyles().tagline}>
 
 				</div>
@@ -121,8 +121,8 @@ class HomePage extends Component {
 // defines the types of variables in this.props
 HomePage.propTypes = {
 	history: PropTypes.object.isRequired,
-	authenticateStaff: PropTypes.func.isRequired,
-	saveStaffProfileToRedux: PropTypes.func.isRequired,
+	authenticateUser: PropTypes.func.isRequired,
+	saveUserProfileToRedux: PropTypes.func.isRequired,
 }
 
 // for all optional props, define a default value
@@ -143,8 +143,8 @@ const mapReduxToProps = (redux) => {
 // Connect together the Redux store with this React component
 export default withRouter(
 	connect(mapReduxToProps, {
-		authenticateStaff,
-		saveStaffProfileToRedux,
+		authenticateUser,
+		saveUserProfileToRedux,
 	})(RadiumHOC)
 )
 
@@ -160,9 +160,9 @@ const comStyles = () => {
       width: '100vw',
       justifyContent: 'center',
       alignItems: 'center',
-      background: '#56CCF2',  /* fallback for old browsers */
-			background: '-webkit-linear-gradient(to right, #2F80ED, #56CCF2)',  /* Chrome 10-25, Safari 5.1-6 */
-			background: 'linear-gradient(to right, #2F80ED, #56CCF2)', /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+			background: '#fe8c00',  /* fallback for old browsers */
+			background: '-webkit-linear-gradient(to right, #f83600, #fe8c00)',  /* Chrome 10-25, Safari 5.1-6 */
+			background: 'linear-gradient(to right, #f83600, #fe8c00)', /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 		},
     font_logo: {
       fontSize: '3rem',

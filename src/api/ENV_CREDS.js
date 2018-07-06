@@ -3,16 +3,16 @@
 
 // DEV
 export const GOOGLE_CLIENT_AUTH_CREDS = {
-  apiKey: 'AIzaSyCf3Suz_71Tz7i3K9V_PV1sA3mcrDJwGEM',
-  clientId: '541729321219-9rhli48jm24ugu08481v6re29s259l8h.apps.googleusercontent.com',
+  apiKey: 'AIzaSyDhRPMShv7UL9a0ZOEjWpM8pTowTduTlDM',
+  clientId: '582282766267-0m7hif4n2j0tgcpslgtioevdarq3ej2r.apps.googleusercontent.com',
   discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/gmail/v1/rest', 'https://www.googleapis.com/discovery/v1/apis/people/v1/rest', 'https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest'],
   scope: 'profile email'
 }
-export const TYPEFORMS = {
-  basic_form_id: 'xvmqm2',
-  advanced_form_id: 'f2E1MJ',
-  seeking_form_id: 'ksLFy7',
-}
+// export const TYPEFORMS = {
+//   basic_form_id: 'xvmqm2',
+//   advanced_form_id: 'f2E1MJ',
+//   seeking_form_id: 'ksLFy7',
+// }
 
 // STAGING
 // export const GOOGLE_CLIENT_AUTH_CREDS = {

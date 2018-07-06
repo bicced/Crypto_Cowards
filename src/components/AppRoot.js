@@ -45,7 +45,7 @@ class AppRoot extends Component {
             animation={{ scale: 0.9, yoyo: true, repeat: 1, duration: 900 }}
             style={{ transform: 'scale(1)' }}
           >
-           <h1 style={comStyles().font_logo}>RentHero</h1>
+           <h1 style={comStyles().font_logo}>CryptoCowards</h1>
          </TweenOne>
         </div>
       )
@@ -115,9 +115,9 @@ const comStyles = () => {
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',
-      background: '#56CCF2',  /* fallback for old browsers */
-			background: '-webkit-linear-gradient(to right, #2F80ED, #56CCF2)',  /* Chrome 10-25, Safari 5.1-6 */
-			background: 'linear-gradient(to right, #2F80ED, #56CCF2)', /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+      background: '#fe8c00',  /* fallback for old browsers */
+      background: '-webkit-linear-gradient(to right, #f83600, #fe8c00)',  /* Chrome 10-25, Safari 5.1-6 */
+      background: 'linear-gradient(to right, #f83600, #fe8c00)', /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
     },
     font_logo: {
       fontSize: '3rem',

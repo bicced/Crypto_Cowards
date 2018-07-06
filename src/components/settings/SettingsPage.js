@@ -24,11 +24,11 @@ class SettingsPage extends Component {
 	constructor() {
 		super()
 		this.state = {
-			//   
+			//
 		}
 	}
 
-	renderStaffHeader() {
+	renderUserHeader() {
 		return (
 			<div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: '100%', }}>
 				<Icon type="setting" style={{ fontSize: '5REM'}} />
@@ -39,54 +39,36 @@ class SettingsPage extends Component {
 		)
 	}
 
-	renderStaffProfilePreview() {
+	renderUserProfilePreview() {
 		return (
       <div style={{ margin: '10px 10px 0px 10px' }}>
         <div style={comStyles().rowContainer}>
-          <h2 style={{ margin: 0 }}>{`${this.props.staff_profile.first_name} ${this.props.staff_profile.last_name}`}</h2>
-          <Button type='primary' ghost onClick={() => this.props.history.push(`/app/settings/${this.props.staff_profile.staff_id}/staff/edit`)}>
+          <h2 style={{ margin: 0 }}>{`${this.props.user_profile.first_name} ${this.props.user_profile.last_name}`}</h2>
+          <Button type='primary' ghost onClick={() => this.props.history.push(`/app/settings/${this.props.user_profile.user_id}/user/edit`)}>
             EDIT
           </Button>
         </div>
         <br />
         <div>
-          <p>{`Email: ${this.props.staff_profile.email}`}</p>
-					<p>{`Phone: ${this.props.staff_profile.phone}`}</p>
+          <p>{`Email: ${this.props.user_profile.email}`}</p>
+					<p>{`Phone: ${this.props.user_profile.phone}`}</p>
         </div>
       </div>
     )
 	}
 
-	renderCorporationPreview() {
-		return (
-			<div style={{ margin: '10px 10px 0px 10px' }}>
-        <div style={comStyles().rowContainer}>
-          <h2 style={{ margin: 0 }}>{`${this.props.corporation_profile.corporation_name}`}</h2>
-          <Button type='primary' ghost onClick={() => this.props.history.push(`/app/settings/${this.props.corporation_profile.corporation_id}/corp/edit`)}>
-            EDIT
-          </Button>
-        </div>
-        <br />
-        <div>
-          <p>{`Email: ${this.props.corporation_profile.email}`}</p>
-					<p>{`Phone: ${this.props.corporation_profile.phone}`}</p>
-					<p>{`Website: ${this.props.corporation_profile.website}`}</p>
-        </div>
-      </div>
-		)
-	}
 
-	// renderStaffsPreview() {
+	// renderUsersPreview() {
 	// 	return (
 	// 		<div style={{ margin: '10px 10px 0px 10px' }}>
   //       <div style={comStyles().rowContainer}>
-  //         <h2 style={{ margin: 0 }}>{`${this.props.staffs.length} Staff`}</h2>
+  //         <h2 style={{ margin: 0 }}>{`${this.props.users.length} User`}</h2>
   //       </div>
   //       <br />
   //       <div>
   //         <List
 	// 					itemLayout='horizontal'
-	// 					dataSource={this.props.staffs}
+	// 					dataSource={this.props.users}
 	// 					renderItem={item => {
 	// 						return (
 	// 							<List.Item>
@@ -119,19 +101,11 @@ class SettingsPage extends Component {
 			>
 				<QueueAnim type="bottom" component="div">
 				{
-					this.renderStaffHeader()
+					this.renderUserHeader()
 				}
 				<Divider>My Details</Divider>
 				{
-					this.renderStaffProfilePreview()
-				}
-				<Divider>Company</Divider>
-				{
-					this.renderCorporationPreview()
-				}
-				<Divider>Staff</Divider>
-				{
-					// this.renderStaffsPreview()
+					this.renderUserProfilePreview()
 				}
 				</QueueAnim>
 			</Card>
@@ -156,10 +130,10 @@ class SettingsPage extends Component {
 // defines the types of variables in this.props
 SettingsPage.propTypes = {
 	history: PropTypes.object.isRequired,
-	staff_profile: PropTypes.object.isRequired,
+	user_profile: PropTypes.object.isRequired,
 	corporation_profile: PropTypes.object.isRequired,
 	loading_complete: PropTypes.bool.isRequired,
-	// staffs: PropTypes.array.isRequired,
+	// users: PropTypes.array.isRequired,
 }
 
 // for all optional props, define a default value
@@ -173,10 +147,9 @@ const RadiumHOC = Radium(SettingsPage)
 // Get access to state from the Redux store
 const mapReduxToProps = (redux) => {
 	return {
-		staff_profile: redux.auth.staff_profile,
-		corporation_profile: redux.auth.corporation_profile,
+		user_profile: redux.auth.user_profile,
 		loading_complete: redux.app.loading_complete,
-		// staffs: redux.auth.staffs,
+		// users: redux.auth.users,
 	}
 }
 

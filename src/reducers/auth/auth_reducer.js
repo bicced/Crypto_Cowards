@@ -1,11 +1,10 @@
 import {
-  AUTHENTICATED_STAFF,
+  AUTHENTICATED_USER,
   AUTHENTICATION_LOADED,
-  UNAUTHENTICATED_STAFF,
-  SAVE_STAFF_PROFILE,
-  SAVE_CORPORATION_PROFILE,
+  UNAUTHENTICATED_USER,
+  SAVE_USER_PROFILE,
   LOCATION_FORWARDING,
-  REMOVE_STAFF_PROFILE,
+  REMOVE_USER_PROFILE,
 } from '../../actions/action_types'
 
 const INITIAL_STATE = {
@@ -15,13 +14,13 @@ const INITIAL_STATE = {
     // email: 'info@studenthousing.ca',
     // thumbnail: 'https://imgur.com/348djld',
 	},
-	staff_profile: {
+	user_profile: {
     // corporation_id: null,
     // created_at: '2017-07-11T02:54:03.142Z',
     // email: 'kangze.web.lance@gmail.com',
     // name: 'Khan Huang',
     // phone: '24859357437',
-    // staff_id: '5d7b0bd0-4ce1-4c9b-b860-02cf79667952',
+    // user_id: '5d7b0bd0-4ce1-4c9b-b860-02cf79667952',
     // thumbnail: 'https://imgur.com/348djld',
 	},
   authenticated: false,
@@ -29,12 +28,12 @@ const INITIAL_STATE = {
   location_forwarding: '',    // forwarding location after sign in
   // browser_fingerprint: '',    // unique identifier for web browser
   // s3_corporation: '',
-  // staffs: [],
+  // users: [],
 }
 
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
-    case AUTHENTICATED_STAFF:
+    case AUTHENTICATED_USER:
       return {
         ...state,
         authenticated: action.payload ? true : false,
@@ -44,33 +43,28 @@ export default (state = INITIAL_STATE, action) => {
         ...state,
         authentication_loaded: true,
       }
-    case UNAUTHENTICATED_STAFF:
+    case UNAUTHENTICATED_USER:
       return {
         ...state,
-        staff_profile: {},
+        user_profile: {},
         authenticated: false,
       }
-    case SAVE_STAFF_PROFILE:
-      localStorage.setItem('staff_id', action.payload.staff_id)
+    case SAVE_USER_PROFILE:
+      localStorage.setItem('user_id', action.payload.user_id)
       return {
         ...state,
-        staff_profile: action.payload,
-      }
-    case SAVE_CORPORATION_PROFILE:
-      return {
-        ...state,
-        corporation_profile: action.payload,
+        user_profile: action.payload,
       }
     case LOCATION_FORWARDING:
       return {
         ...state,
         location_forwarding: action.payload,
       }
-    case REMOVE_STAFF_PROFILE:
+    case REMOVE_USER_PROFILE:
       localStorage.removeItem('user_id')
       return {
         ...state,
-        staff_profile: {},
+        user_profile: {},
         corporation_profile: {},
       }
     default:

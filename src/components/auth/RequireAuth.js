@@ -1,6 +1,6 @@
-// Higher Order Compt for checking if staff member is authenticated
+// Higher Order Compt for checking if user member is authenticated
 // Can also be written to check if corporation is authenticated
-// Or to check if staff member has permissions to view a passed in component
+// Or to check if user member has permissions to view a passed in component
 
 import React, { Component } from 'react'
 import { connect } from 'react-redux'

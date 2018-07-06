@@ -17,7 +17,7 @@ class DesktopHeader extends Component {
 	render() {
 		return (
 			<div id='DesktopHeader' style={comStyles().container}>
-				<div style={comStyles().font_logo} onClick={() => this.props.history.push('/app/ads')}>RentHero</div>
+				<div style={comStyles().font_logo} onClick={() => this.props.history.push('/app/ads')}>CryptoCowards</div>
 				<DesktopDropdown />
 			</div>
 		)
@@ -67,10 +67,9 @@ const comStyles = () => {
       maxWidth: '100vw',
       // background: 'rgba(81, 151, 214, 1)',
       padding: '15px',
-			background: '#56CCF2',  /* fallback for old browsers */
-			background: '-webkit-linear-gradient(to right, #2F80ED, #56CCF2)',  /* Chrome 10-25, Safari 5.1-6 */
-			background: 'linear-gradient(to right, #2F80ED, #56CCF2)', /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-
+			background: '#fe8c00',  /* fallback for old browsers */
+			background: '-webkit-linear-gradient(to right, #f83600, #fe8c00)',  /* Chrome 10-25, Safari 5.1-6 */
+			background: 'linear-gradient(to right, #f83600, #fe8c00)', /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 		},
     font_logo: {
       fontSize: '1.5rem',

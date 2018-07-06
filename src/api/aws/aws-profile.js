@@ -6,8 +6,8 @@ import { AWS_FEDERATED_IDENTITY_ENV } from '../API_URLS'
 const REGION = 'us-east-1'
 // const USER_POOL_ID = 'us-east-1_YSySxXy4r'
 // const CLIENT_ID = '71lguiml06s1j9i7ub1k8skirp'
-const CORPORATION_USER_POOL_ID = 'us-east-1_ueLNqdv7l'
-const CORPORATION_CLIENT_ID = 'v658686di26fa8pfjtvj1669i'
+const CORPORATION_USER_POOL_ID = 'us-east-1_gxR2rZM7w'
+const CORPORATION_CLIENT_ID = '19mvkrti8mm0pncd77t20tmveb'
 
 AWS.config.update({
 	region: REGION
@@ -17,7 +17,7 @@ AWS.config.update({
 //   ClientId: CLIENT_ID
 // }
 
-const staffData = {
+const userData = {
     UserPoolId: CORPORATION_USER_POOL_ID,
     ClientId: CORPORATION_CLIENT_ID
 }
@@ -29,8 +29,8 @@ export const BUCKET_NAME = 'renthero-images'
 // export const ENCRYPTED_BUCKET_NAME = 'rentburrow3-tenant-images'
 // export const ENCRYPTED_BUCKET_NAME = 'test-encrypted-images-rentburrow'
 
-export const staffPool = new CognitoUserPool(staffData);
-export const STAFF_USERPOOL_ID = `cognito-idp.${REGION}.amazonaws.com/${CORPORATION_USER_POOL_ID}`
+export const userPool = new CognitoUserPool(userData);
+export const USER_USERPOOL_ID = `cognito-idp.${REGION}.amazonaws.com/${CORPORATION_USER_POOL_ID}`
 
 // export const studentPool = new CognitoUserPool(studentData);
 // export const STUDENT_USERPOOL_ID = `cognito-idp.${REGION}.amazonaws.com/${USER_POOL_ID}`
