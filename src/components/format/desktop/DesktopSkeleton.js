@@ -78,6 +78,7 @@ class DesktopSkeleton extends Component {
       <Menu
         mode='inline'
         style={comStyles().menuContainer}
+        theme='light'
         onClick={e => this.props.history.push(`/app/${e.key.substr(2)}`)}
         selectedKeys={this.state.currentTabs}
         onSelect={(a) => this.setState({ currentTabs: [a.key], })}
@@ -205,14 +206,14 @@ const comStyles = (menu_hidden) => {
       maxWidth: '100vw',
     },
     menuContainer: {
-      minWidth: '20%',
-      maxWidth: '20%',
+      minWidth: '10%',
+      maxWidth: '15%',
     },
     contentContainer: {
       display: 'flex',
       flexDirection: 'column',
       maxHeight: '93vh',
-      minWidth: '80%',
+      minWidth: '85%',
       maxWidth: '20%',
       // overflowY: 'scroll',
       // ...attrs,

@@ -12,6 +12,11 @@ import {
 	authenticationLoaded,
 	forwardUrlLocation,
 } from '../actions/auth/auth_actions'
+import {
+	saveUserAlgos,
+	saveAllAlgos,
+	saveUserFollows,
+} from '../actions/algo/algo_actions'
 import { saveLoadingCompleteToRedux } from '../actions/app/app_actions'
 import {
 	redirectPath,
@@ -20,7 +25,14 @@ import {
 } from '../api/general/general_api'
 import {
 	getUserProfile,
+	checkAccountRole
 } from '../api/auth/auth_api'
+import {
+	getUserAlgos,
+	getAllAlgos,
+	getUserFollows,
+} from '../api/algo/user_algos'
+
 
 
 // this 'higher order component'(HOC) creator takes a component (called ComposedComponent)
@@ -34,6 +46,11 @@ export default (ComposedComponent) => {
 
 			// do stuff based on the URL
 			this.executeOnURL()
+
+			getAllAlgos()
+				.then((algoData) => {
+					this.props.saveAllAlgos(algoData)
+				})
     }
 
 		checkIfUserLoggedIn() {
@@ -44,9 +61,6 @@ export default (ComposedComponent) => {
 			}
 			retrieveUserFromLocalStorage()
 				.then((user) => {
-					console.log(user)
-					console.log('kz trippin balls')
-					console.log(location)
 					return getUserProfile(user.IdentityId, {})
 				})
 				.then((data) => {
@@ -57,7 +71,33 @@ export default (ComposedComponent) => {
 					// if they have, then we'll auto log them in
 					this.props.history.push(location)
 					this.props.authenticationLoaded()
-					return this.saveUserProfileToRedux(data.profile, location)
+					getUserAlgos(data.profile.user_id)
+						.then((userAlgos) => {
+							this.props.saveUserAlgos(userAlgos)
+						})
+					getUserFollows(data.profile.user_id)
+						.then((userFollows) => {
+							this.props.saveUserFollows(userFollows)
+						})
+					checkAccountRole(data.profile.user_id)
+						.then((role) => {
+							console.log(role.rows)
+							if (role.rows.length == 0){
+								console.log('neither')
+								return this.saveUserProfileToRedux(data.profile, location)
+							}
+							else if (role.rows[0].coward_id) {
+								console.log('theres a coward')
+								console.log(data.profile)
+								data.profile.coward_id = role.rows[0].coward_id
+								return this.saveUserProfileToRedux(data.profile, location)
+							}
+							else if (role.rows[0].pro_id) {
+								console.log('there is a pro')
+								data.profile.pro_id = role.rows[0].pro_id
+								return this.saveUserProfileToRedux(data.profile, location)
+							}
+						})
 				})
 				.catch((err) => {
 					// if not then we do nothing
@@ -129,6 +169,9 @@ export default (ComposedComponent) => {
 		dispatchActionsToRedux: PropTypes.func.isRequired,
 		saveLoadingCompleteToRedux: PropTypes.func.isRequired,
 		authenticationLoaded: PropTypes.func.isRequired,
+		saveUserAlgos: PropTypes.func.isRequired,
+		saveAllAlgos: PropTypes.func.isRequired,
+		saveUserFollows: PropTypes.func.isRequired,
   }
 
   // for all optional props, define a default value
@@ -151,6 +194,9 @@ export default (ComposedComponent) => {
 			dispatchActionsToRedux,
 			saveLoadingCompleteToRedux,
 			authenticationLoaded,
+			saveUserAlgos,
+			saveAllAlgos,
+			saveUserFollows,
     })(AppRootMechanics)
 	)
 }

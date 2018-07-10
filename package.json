@@ -42,14 +42,21 @@
   "dependencies": {
     "amazon-cognito-identity-js": "1.19.0",
     "amazon-cognito-js": "1.1.0",
+    "ant-design-pro": "^2.0.0-beta.2",
     "antd": "^3.6.4",
     "antd-mobile": "^2.1.2",
     "aws-sdk": "2.80.0",
     "axios": "0.16.2",
+    "babel-plugin-import": "^1.8.0",
+    "bizcharts": "^3.1.10",
     "browser-locale": "1.0.2",
+    "css-loader": "^0.28.4",
     "express": "4.15.3",
     "font-awesome": "^4.7.0",
     "js-cookie": "2.1.4",
+    "less": "^2.7.2",
+    "less-loader": "^4.1.0",
+    "less-vars-to-js": "^1.2.1",
     "lodash": "4.17.4",
     "moment": "2.18.1",
     "nodemon": "1.12.0",
@@ -66,6 +73,7 @@
     "redux-logger": "3.0.6",
     "redux-thunk": "2.2.0",
     "rxjs": "5.4.0",
+    "style-loader": "^0.18.2",
     "uuid": "3.0.1"
   }
 }

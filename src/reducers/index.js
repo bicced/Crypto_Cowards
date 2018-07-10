@@ -1,6 +1,7 @@
 import { combineReducers } from 'redux'
 import appReducer from './app/app_reducer'
 import authReducer from './auth/auth_reducer'
+import algosReducer from './algos/algos_reducer'
 
 // takes all your seperate reducers into one giant reducer
 // each Redux action will flow through each middleware and then reach the reducers
@@ -8,6 +9,7 @@ import authReducer from './auth/auth_reducer'
 const rootReducer = combineReducers({
 	app: appReducer,
 	auth: authReducer,
+	algos: algosReducer,
 })
 
 export default rootReducer

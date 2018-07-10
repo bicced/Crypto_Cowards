@@ -11,14 +11,19 @@ import {
 
 } from 'antd-mobile'
 import DesktopDropdown from './DesktopDropdown'
-
+import NoticeIcon from 'ant-design-pro/lib/NoticeIcon'
 class DesktopHeader extends Component {
 
 	render() {
 		return (
 			<div id='DesktopHeader' style={comStyles().container}>
 				<div style={comStyles().font_logo} onClick={() => this.props.history.push('/app/ads')}>CryptoCowards</div>
-				<DesktopDropdown />
+				<div style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginRight: '2%'}}>
+					<NoticeIcon count={2}/>
+					<div style={{marginLeft: '40%'}}>
+						<DesktopDropdown />
+					</div>
+				</div>
 			</div>
 		)
 	}
@@ -72,10 +77,10 @@ const comStyles = () => {
 			background: 'linear-gradient(to right, #f83600, #fe8c00)', /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 		},
     font_logo: {
-      fontSize: '1.5rem',
+      fontSize: '2.0rem',
       color: 'white',
       fontWeight: 'bold',
-      fontFamily: `'Carter One', cursive`,
+      fontFamily: `'Reem Kufi', sans-serif`,
 			cursor: 'pointer',
     },
 	}
