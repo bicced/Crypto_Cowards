@@ -123,7 +123,7 @@ const comStyles = () => {
       fontSize: '3rem',
       color: 'white',
       fontWeight: 'bold',
-      fontFamily: `'Carter One', cursive`,
+      fontFamily: `'Reem Kufi', sans-serif`,
     },
     error_message: {
       width: '100vw',

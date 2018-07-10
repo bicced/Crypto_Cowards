@@ -20,6 +20,7 @@ import MobileSkeleton from './format/mobile/MobileSkeleton'
 import RequireAuth from './auth/RequireAuth'
 import AppHome from './home/AppHome'
 import AdsPage from './ads/AdsPage'
+import AlgoPage from './algo/AlgoPage'
 import SettingsPage from './settings/SettingsPage'
 import RegistrationHome from './registration/RegistrationHome'
 
@@ -49,6 +50,8 @@ class AppRoutes extends Component {
       this.props.changeSelectedTab('settings')
     } else if (path.startsWith('/app/home')) {
       this.props.changeSelectedTab('home')
+    } else if (path.startsWith('/app/algo')) {
+      this.props.changeSelectedTab('algo')
     }
   }
 
@@ -75,6 +78,7 @@ class AppRoutes extends Component {
 			<Switch>
         <Route exact path='/app/home' component={RequireAuth(AppHome)} />
         <Route exact path='/app/ads' component={RequireAuth(AdsPage)} />
+        <Route exact path='/app/algo' component={RequireAuth(AlgoPage)} />
         <Route exact path='/app/settings' component={RequireAuth(SettingsPage)} />
         <Route exact path='/app/registration' component={RequireAuth(RegistrationHome)} />
       </Switch>
@@ -109,11 +113,13 @@ class AppRoutes extends Component {
       navs = [
         { key: 'home', title: 'Home', path: '/app/home', icon: (<Icon type='home' />), selectedIcon: (<Icon type='home' style={{ color: '#33A3F4' }} />) },
         { key: 'ads', title: 'Ads', path: '/app/ads', icon: (<Icon type='appstore' />), selectedIcon: (<Icon type='appstore' style={{ color: '#33A3F4' }} />) },
+        { key: 'algo', title: 'Algo', path: '/app/algo', icon: (<Icon type='switcher' />), selectedIcon: (<Icon type='switcher' style={{ color: '#33A3F4' }} />) },
         { key: 'settings', title: 'Settings', path: '/app/settings', icon: (<Icon type='setting' />), selectedIcon: (<Icon type='setting' style={{ color: '#33A3F4' }} />) },
       ]
       desktop_navs = [
         { key: 'home', title: 'Home', path: '/app/home', icon: (<Icon type='home' />) },
         { key: 'ads', title: 'Ads', path: '/app/ads', icon: (<Icon type='appstore' />) },
+        { key: 'algo', title: 'Algo', path: '/app/algo', icon: (<Icon type='switcher' />)},
         { key: 'settings', title: 'Settings', path: '/app/settings', icon: (<Icon type='setting' />) },
       ]
     }
@@ -184,7 +190,7 @@ const comStyles = () => {
       fontSize: '2.5rem',
       color: 'rgba(81, 151, 214, 1)',
       fontWeight: 'bold',
-      fontFamily: `'Carter One', cursive`,
+      fontFamily: `'Reem Kufi', sans-serif`,
     },
 	}
 }

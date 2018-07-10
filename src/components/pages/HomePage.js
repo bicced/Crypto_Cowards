@@ -11,11 +11,11 @@ import {
 	Button,
 	Icon,
 } from 'antd'
-import SubtitlesMachine from '../modules/SubtitlesMachine'
-import { GOOGLE_CLIENT_AUTH_CREDS } from '../../api/ENV_CREDS'
+import { GOOGLE_CLIENT_AUTH_CREDS } from '../../../credentials/development/ENV_CREDS'
 import { registerGoogleLoginWithCognito } from '../../api/aws/aws-cognito'
 import { getUserProfile } from '../../api/auth/auth_api'
 import { authenticateUser, saveUserProfileToRedux } from '../../actions/auth/auth_actions'
+import SubtitlesMachine from '../modules/SubtitlesMachine'
 
 class HomePage extends Component {
 
@@ -75,7 +75,7 @@ class HomePage extends Component {
             self.props.history.push('/onboarding/checkuser')
           } else {
             // self.props.history.push('/onboarding/checkuser')
-            self.props.history.push('/app/ads')
+            self.props.history.push('/app/home')
             setTimeout(() => {
               window.location.reload()
             }, 500)
@@ -90,7 +90,7 @@ class HomePage extends Component {
 
 	// <SubtitlesMachine
 	// 	speed={0.5}
-	// 	text='Your AI rental assistant. Qualify more renters than humanly possible.'
+	// 	text= 'Your AI cryptocurrency trading bot'
 	// 	textStyles={{
 	// 		fontSize: '1rem',
 	// 		color: 'white',
@@ -165,16 +165,16 @@ const comStyles = () => {
 			background: 'linear-gradient(to right, #f83600, #fe8c00)', /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 		},
     font_logo: {
-      fontSize: '3rem',
+      fontSize: '3.5rem',
       color: 'white',
       // fontWeight: 'bold',
-      fontFamily: `'Carter One', cursive`,
+      fontFamily: `'Reem Kufi', sans-serif`,
       margin: '0px 0px 20px 0px'
     },
     tagline: {
       fontSize: '1rem',
       color: 'white',
-      margin: '0px 0px 100px 0px',
+      margin: '0px 0px 30px 0px',
       width: '50%',
       textAlign: 'center',
       fontStyle: 'italic',

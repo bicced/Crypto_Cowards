@@ -103,7 +103,7 @@ const comStyles = () => {
       fontSize: '1.5rem',
       color: 'rgba(81, 151, 214, 1)',
       fontWeight: 'bold',
-      fontFamily: `'Carter One', cursive`,
+      fontFamily: `'Reem Kufi', sans-serif`,
     },
     hideOverflow: {
       // overflowY: 'scroll'
