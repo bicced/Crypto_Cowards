@@ -68,7 +68,8 @@ class AdsPage extends Component {
 	}
 
 	filterAlgoList() {
-
+    console.log(this.props.user_algos)
+    console.log(this.props.user_follows)
 		let allAlgos = this.props.all_algos.map(algo => algo.algo_id)
 		let userFollows = this.props.user_follows.map(algo => algo.algo_id)
 
@@ -96,6 +97,8 @@ class AdsPage extends Component {
 					initialPage={0}
 					onTabClick={(e) => this.setState({ currentTab: e.title })}
 					renderTab={tab => <span>{tab.title}</span>}
+          tabBarUnderlineStyle={{borderColor: '#FF4500', borderBottomColor: '#FF4500'}}
+          tabBarActiveTextColor='#FF4500'
 				>
 					<div>
 						{
@@ -149,11 +152,39 @@ class AdsPage extends Component {
 		}
 	}
 
+  renderCheckbox(item){
+    if (this.props.user_profile.user_id) {
+      if (item.user_id == this.props.user_profile.user_id) {
+        return (<Icon type="user" style={{color: 'orange'}}/>)
+      }
+      else {
+        return (<Checkbox value={item} onChange={(e)=> this.checkTheBox(e.target)}></Checkbox>)
+      }
+    }
+    else {
+      return (<Checkbox value={item} onChange={(e)=> this.checkTheBox(e.target)}></Checkbox>)
+    }
+  }
 
 	renderAlgoList(typeList) {
 		return (
 			<div style={comStyles().algoList}>
-				<List
+      {  // <List>
+        //   <QueueAnim>
+        //     {
+        //       this.state.dataSouce((item) => {
+        //         return (
+        //           <List.Item>
+        //
+        //           </List.Item>
+        //         )
+        //       })
+        //     }
+        //   </QueueAnim>
+        // </List>
+        //
+      }
+        <List
 	        className="demo-loadmore-list"
 	        itemLayout="horizontal"
 					header={
@@ -175,7 +206,12 @@ class AdsPage extends Component {
 								description={
 									<table style={comStyles().table}>
 										<tr>
-											<th width="8%"><Avatar src="https://image.ibb.co/fVto1o/784915.jpg" /> &nbsp; <Checkbox value={item} onChange={(e)=> this.checkTheBox(e.target)} ></Checkbox></th>
+											<th width="8%">
+                        <Avatar src="https://image.ibb.co/fVto1o/784915.jpg" /> &nbsp;
+                        {
+                          this.renderCheckbox(item)
+                        }
+                      </th>
 											<th>{item.algo_name}</th>
 											<th>{item.user_id}</th>
 											<th>asdasd</th>

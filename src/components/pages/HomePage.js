@@ -106,11 +106,11 @@ class HomePage extends Component {
 				<div style={comStyles().tagline}>
 
 				</div>
-				<Button onClick={() => this.loginWithGoogle()} type='ghost' style={{ width: '250px', color: 'white', border: '1px solid white' }}>
+				<Button onClick={() => this.loginWithGoogle()} type='ghost' style={{ width: '250px', color: '#fe8c00', border: '1px solid #fe8c00' }}>
 					Login with Gmail <Icon type='right' />
 				</Button>
 				<div style={{ width: '100%', height: '10px' }}></div>
-				<Button onClick={() => this.props.history.push('/signup/beta/landlords')} type='ghost' style={{ width: '250px', color: 'white', border: '1px solid white' }}>
+				<Button onClick={() => this.props.history.push('/signup/beta/landlords')} type='ghost' style={{ width: '250px', color: '#fe8c00', border: '1px solid #fe8c00' }}>
 					Beta Signup <Icon type='right' />
 				</Button>
 			</div>
@@ -160,20 +160,21 @@ const comStyles = () => {
       width: '100vw',
       justifyContent: 'center',
       alignItems: 'center',
-			background: '#fe8c00',  /* fallback for old browsers */
-			background: '-webkit-linear-gradient(to right, #f83600, #fe8c00)',  /* Chrome 10-25, Safari 5.1-6 */
-			background: 'linear-gradient(to right, #f83600, #fe8c00)', /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+			backgroundColor: 'white',
+			// background: '#fe8c00',  /* fallback for old browsers */
+			// background: '-webkit-linear-gradient(to right, #f83600, #fe8c00)',  /* Chrome 10-25, Safari 5.1-6 */
+			// background: 'linear-gradient(to right, #f83600, #fe8c00)', /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 		},
     font_logo: {
       fontSize: '3.5rem',
-      color: 'white',
+      color: '#fe8c00',
       // fontWeight: 'bold',
       fontFamily: `'Reem Kufi', sans-serif`,
       margin: '0px 0px 20px 0px'
     },
     tagline: {
       fontSize: '1rem',
-      color: 'white',
+      color: '#fe8c00',
       margin: '0px 0px 30px 0px',
       width: '50%',
       textAlign: 'center',

@@ -16,6 +16,7 @@ import {
 	saveUserAlgos,
 	saveAllAlgos,
 	saveUserFollows,
+	saveUserSelected,
 } from '../actions/algo/algo_actions'
 import { saveLoadingCompleteToRedux } from '../actions/app/app_actions'
 import {
@@ -32,6 +33,7 @@ import {
 	getAllAlgos,
 	getUserFollows,
 } from '../api/algo/user_algos'
+import { getBot } from '../api/bot/selected_bot'
 
 
 
@@ -78,6 +80,11 @@ export default (ComposedComponent) => {
 					getUserFollows(data.profile.user_id)
 						.then((userFollows) => {
 							this.props.saveUserFollows(userFollows)
+						})
+					getBot(data.profile.user_id)
+						.then((selected) => {
+							console.log(selected)
+							this.props.saveUserSelected(selected)
 						})
 					checkAccountRole(data.profile.user_id)
 						.then((role) => {
@@ -172,6 +179,7 @@ export default (ComposedComponent) => {
 		saveUserAlgos: PropTypes.func.isRequired,
 		saveAllAlgos: PropTypes.func.isRequired,
 		saveUserFollows: PropTypes.func.isRequired,
+		saveUserSelected: PropTypes.func.isRequired,
   }
 
   // for all optional props, define a default value
@@ -197,6 +205,7 @@ export default (ComposedComponent) => {
 			saveUserAlgos,
 			saveAllAlgos,
 			saveUserFollows,
+			saveUserSelected
     })(AppRootMechanics)
 	)
 }
