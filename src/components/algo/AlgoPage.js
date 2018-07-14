@@ -9,11 +9,14 @@ import Rx from 'rxjs'
 import { withRouter } from 'react-router-dom'
 import QueueAnim from 'rc-queue-anim'
 import { addAlgo, getUserAlgos } from '../../api/algo/user_algos'
-import { saveUserAlgos } from '../../actions/algo/algo_actions'
+import { saveUserAlgos, saveUserSelected } from '../../actions/algo/algo_actions'
 import {
   List, Avatar, Button, Spin, Input, Card, Divider, Icon, message
 } from 'antd'
-
+import {
+	WhiteSpace
+} from 'antd-mobile'
+import { saveBot, getBot, activateBot } from '../../api/bot/selected_bot'
 const { TextArea } = Input
 
 class AlgoPage extends Component {
@@ -48,10 +51,38 @@ class AlgoPage extends Component {
     return (
       <div>
         <Input placeholder='Name of Algo' onChange={(e) => this.setState({ algoName: e.target.value})} />
+        <WhiteSpace/>
         <TextArea placeholder='Algorithm code' onChange={(e) => this.setState({ algo: e.target.value})} rows={4} />
+        <WhiteSpace/>
         <Button type='primary' onClick={() => this.submitAlgo() }>Submit Algo</Button>
       </div>
     )
+  }
+
+  selectBot(algo_id) {
+    console.log(algo_id, this.props.user_profile.user_id)
+    console.log('=====><><><><><><=====')
+    saveBot({user_id: this.props.user_profile.user_id, algo_id: algo_id })
+      .then((data) => {
+        return getBot(data)
+      })
+      .then((data) => {
+        this.props.saveUserSelected(data)
+      })
+  }
+
+  renderButton(algo_id) {
+    if (this.props.user_selected) {
+      if (this.props.user_selected.algo_id == algo_id) {
+        return (<div style={{color: 'orange'}}><Icon type='star-o' /> Selected Bot</div>)
+      }
+      else {
+        return (<Button type='default' onClick={() => this.selectBot(algo_id)} >Select Bot</Button>)
+      }
+    }
+    else {
+      return (<Button type='default' onClick={() => this.selectBot(algo_id)} >Select Bot</Button>)
+    }
   }
 
   renderAlgoList() {
@@ -65,10 +96,32 @@ class AlgoPage extends Component {
            <List.Item actions={[<a>edit</a>, <a>more</a>]}>
              <List.Item.Meta
                avatar={<Avatar src="https://image.ibb.co/fVto1o/784915.jpg" />}
-               title={<a href="https://ant.design">{item.algo_name}</a>}
+               title={<a>{item.algo_name}</a>}
                description= {item.algo}
              />
-             <div>content</div>
+             <div>{this.renderButton(item.algo_id)}</div>
+           </List.Item>
+         )}
+       />
+      </div>
+    )
+  }
+
+  renderFollowList() {
+    return (
+      <div>
+        <List
+         className="demo-loadmore-list"
+         itemLayout="horizontal"
+         dataSource={this.props.user_follows}
+         renderItem={item => (
+           <List.Item actions={[<a>edit</a>, <a>more</a>]}>
+             <List.Item.Meta
+               avatar={<Avatar src="https://image.ibb.co/fVto1o/784915.jpg" />}
+               title={<a>{item.algo_name}</a>}
+               description= {item.algo}
+             />
+             <div>{this.renderButton(item.algo_id)}</div>
            </List.Item>
          )}
        />
@@ -84,6 +137,36 @@ class AlgoPage extends Component {
 			</div>
 		)
 	}
+
+  activate() {
+    // activateBot(this.props.user_selected)
+    //   .then((data) => {
+    //     console.log(data)
+    //   })
+  }
+
+  renderSelectedBot() {
+    if (this.props.user_selected) {
+      return (
+        <List
+         className="demo-loadmore-list"
+         itemLayout="horizontal"
+         dataSource={[this.props.user_selected]}
+         renderItem={item => (
+           <List.Item actions={[<a>edit</a>, <a>more</a>]}>
+             <List.Item.Meta
+               avatar={<Avatar src="https://image.ibb.co/fVto1o/784915.jpg" />}
+               title={<a>{item.algo_name}</a>}
+               description= {item.algo}
+             />
+             <div><Button type='primary' onClick={() => this.activate()}>Activate Bot</Button></div>
+           </List.Item>
+         )}
+       />
+      )
+    }
+  }
+
 
   renderAlgo() {
     return (
@@ -101,10 +184,19 @@ class AlgoPage extends Component {
 				{
 					this.renderAlgoInputs()
 				}
-				<Divider>Your Algorithms</Divider>
+				<Divider>My Algorithms</Divider>
+        <p><b>Created</b></p>
 				{
 					this.renderAlgoList()
 				}
+        <p style={{marginTop: '3%'}}><b>Following</b></p>
+        {
+          this.renderFollowList()
+        }
+        <Divider>Selected Bot</Divider>
+        {
+          this.renderSelectedBot()
+        }
 				</QueueAnim>
 			</Card>
     )
@@ -131,11 +223,11 @@ AlgoPage.propTypes = {
   user_profile: PropTypes.object.isRequired,
 	loading_complete: PropTypes.bool.isRequired,
   saveUserAlgos: PropTypes.func.isRequired,
+  saveUserSelected: PropTypes.func.isRequired,
 }
 
 // for all optional props, define a default value
 AlgoPage.defaultProps = {
-
 }
 
 // Wrap the prop in Radium to allow JS styling
@@ -147,6 +239,8 @@ const mapReduxToProps = (redux) => {
     user_profile: redux.auth.user_profile,
 		loading_complete: redux.app.loading_complete,
     user_algos: redux.algos.user_algos,
+    user_selected: redux.algos.user_selected,
+    user_follows: redux.algos.user_follows,
 	}
 }
 
@@ -154,6 +248,7 @@ const mapReduxToProps = (redux) => {
 export default withRouter(
 	connect(mapReduxToProps, {
     saveUserAlgos,
+    saveUserSelected,
 	})(RadiumHOC)
 )
 

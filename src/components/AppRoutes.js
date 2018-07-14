@@ -111,10 +111,10 @@ class AppRoutes extends Component {
     let desktop_navs = []
     if (this.props.authenticated) {
       navs = [
-        { key: 'home', title: 'Home', path: '/app/home', icon: (<Icon type='home' />), selectedIcon: (<Icon type='home' style={{ color: '#33A3F4' }} />) },
-        { key: 'ads', title: 'Ads', path: '/app/ads', icon: (<Icon type='appstore' />), selectedIcon: (<Icon type='appstore' style={{ color: '#33A3F4' }} />) },
-        { key: 'algo', title: 'Algo', path: '/app/algo', icon: (<Icon type='switcher' />), selectedIcon: (<Icon type='switcher' style={{ color: '#33A3F4' }} />) },
-        { key: 'settings', title: 'Settings', path: '/app/settings', icon: (<Icon type='setting' />), selectedIcon: (<Icon type='setting' style={{ color: '#33A3F4' }} />) },
+        { key: 'home', title: 'Home', path: '/app/home', icon: (<Icon type='home' />), selectedIcon: (<Icon type='home' style={{ color: '#FF4500' }} />) },
+        { key: 'ads', title: 'Ads', path: '/app/ads', icon: (<Icon type='appstore' />), selectedIcon: (<Icon type='appstore' style={{ color: '#FF4500' }} />) },
+        { key: 'algo', title: 'Algo', path: '/app/algo', icon: (<Icon type='switcher' />), selectedIcon: (<Icon type='switcher' style={{ color: '#FF4500' }} />) },
+        { key: 'settings', title: 'Settings', path: '/app/settings', icon: (<Icon type='setting' />), selectedIcon: (<Icon type='setting' style={{ color: '#FF4500' }} />) },
       ]
       desktop_navs = [
         { key: 'home', title: 'Home', path: '/app/home', icon: (<Icon type='home' />) },

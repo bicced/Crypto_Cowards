@@ -16,6 +16,13 @@ const config = {
     publicPath: '/',
     filename: 'bundle.js'
   },
+  node: {
+    fs: 'empty',
+    dns: 'empty',
+    net: 'empty',
+    tls: 'empty',
+    child_process: 'empty'
+  },
   devtool: 'source-map',
   module: {
     rules: [

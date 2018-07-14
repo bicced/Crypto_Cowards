@@ -13,21 +13,22 @@ import QueueAnim from 'rc-queue-anim'
 import Trend from 'ant-design-pro/lib/Trend'
 import NumberInfo from 'ant-design-pro/lib/NumberInfo'
 import numeral from 'numeral'
+import Binance from 'node-binance-api'
+import { getCandlesticks, getBalance } from '../../api/binance/save_binance'
 import 'antd/dist/antd.css'
 import 'ant-design-pro/dist/ant-design-pro.css'
 import CountDown from 'ant-design-pro/lib/CountDown'
 import {
-	Card, Row, Col, Icon, Tooltip, Divider
+	Card, Row, Col, Icon, Tooltip, Divider, Menu, Dropdown, Button
 } from 'antd'
+ //
+//import Binance from 'node-binance-api'
 
-const visitData = []
-const beginDay = new Date().getTime()
-for (let i = 0; i < 50; i += 1) {
-	visitData.push({
-		x: moment(new Date(beginDay + (1000 * 60 * 60 * 24 * i))).format('YYYY-MM-DD'),
-		y: Math.floor(Math.random() * 100) + 10,
-	})
-}
+// Intervals: 1m,3m,5m,15m,30m,1h,2h,4h,6h,8h,12h,1d,3d,1w,1M
+
+
+
+
 
 const chartData = []
 for (let i = 0; i < 20; i += 1) {
@@ -37,6 +38,7 @@ for (let i = 0; i < 20; i += 1) {
     y2: Math.floor(Math.random() * 100) + 10,
   })
 }
+
 
 const salesPieData = [
   {
@@ -64,9 +66,26 @@ const salesPieData = [
     y: 1231,
   },
 ]
+
 const targetTime = new Date().getTime() + 39000000
 
+
+
 class AppHome extends Component {
+
+	constructor() {
+		super()
+		this.state = {
+			visitData: [],
+			ticker: 'BTCUSDT',
+			timeframe: '1d',
+		}
+	}
+
+	componentWillMount() {
+		this.grabGraphs()
+
+	}
 
 	renderCardRow() {
 		return (
@@ -103,15 +122,92 @@ class AppHome extends Component {
 						height={200}
 					/>
 				</ChartCard>
+				<Button onClick={() => this.testButton()}>Test button</Button>
 			</div>
 		)
 	}
 
+	testButton() {
+		getBalance(this.props.user_profile.user_id)
+			.then((data) => {
+				console.log(data)
+			})
+	}
+
+	grabGraphs() {
+		getCandlesticks({ticker: this.state.ticker, timeframe: this.state.timeframe})
+			.then((data) => {
+				let newVisitData = []
+				for (let i = 0; i < data.price.length; i += 1) {
+					newVisitData.push({x: data.time[i], y: Math.round(data.price[i])})
+				}
+				return newVisitData
+			})
+			.then((data) => {
+				console.log(data)
+				this.setState({
+					visitData: data
+				})
+			})
+	}
+
+	changeGraphState(type, value) {
+		console.log(type, value)
+		if (type == 0){
+			this.setState({
+				ticker: value
+			}, () => {
+				this.grabGraphs()
+			})
+		}
+		else {
+			this.setState({
+				timeframe: value
+			}, () => {
+				this.grabGraphs()
+			})
+		}
+	}
+
 	renderCardBelow() {
+		const ticker = (
+		  <Menu>
+		    <Menu.Item>
+		      <a onClick={() => this.changeGraphState(0,'BTCUSDT')}>BTC/USDT</a>
+		    </Menu.Item>
+		    <Menu.Item>
+		      <a onClick={() => this.changeGraphState(0,'EOSBTC')}>EOS/BTC</a>
+		    </Menu.Item>
+				<Menu.Item>
+		      <a value='asd' onClick={(e) => console.log(e)}>TEST</a>
+		    </Menu.Item>
+		  </Menu>
+		)
+
+		const timeframe = (
+		  <Menu >
+		    <Menu.Item>
+		      <a onClick={() => this.changeGraphState(1,'12h')}>'12h'</a>
+		    </Menu.Item>
+		    <Menu.Item>
+		      <a onClick={() => this.changeGraphState(1,'1d')}>'1d'</a>
+		    </Menu.Item>
+		  </Menu>
+		)
 		return (
-			<div style={{marginTop: '3%'}}>
+			<div style={{marginTop: '1%'}}>
 				<ChartCard title="Price history">
 					<NumberInfo
+						title={
+							<div style={{marginTop: '2%'}}>
+								<Dropdown overlay={ticker} >
+									<Button type='default'>{this.state.ticker}</Button>
+								</Dropdown>
+								<Dropdown overlay={timeframe} >
+									<Button type='default'>{this.state.timeframe}</Button>
+								</Dropdown>
+							</div>
+						}
 						total={numeral(12321).format('0,0')}
 						status="up"
 						subTotal={17.1}
@@ -121,52 +217,13 @@ class AppHome extends Component {
 						 color="#FFA500"
 						 borderColor="#FF4500"
 						 height={200}
-						 data={visitData}
+						 data={this.state.visitData}
 					/>
 				</ChartCard>
 			</div>
 		)
 	}
 
-	renderRest() {
-		return (
-			<div>
-
-				<TimelineChart
-					height={200}
-					data={chartData}
-					titleMap={{ y1: '客流量', y2: '支付笔数' }}
-				/>
-				<ChartCard
-	        title="Time until next rebalance"
-	        action={<Tooltip title="指标说明"><Icon type="info-circle-o" /></Tooltip>}
-	        total="78%"
-					style={{width: '50%'}}
-	        footer={
-	          <div>
-	            <span>
-	              Upward Trend Flag
-	              <Trend flag="up" style={{ marginLeft: 8, color: 'rgba(0,0,0,.85)' }}>12%</Trend>
-	            </span>
-	            <span style={{ marginLeft: 16 }}>
-	              Downward Trend Flag
-	              <Trend flag="down" style={{ marginLeft: 8, color: 'rgba(0,0,0,.85)' }}>11%</Trend>
-	            </span>
-	          </div>
-	        }
-	        contentHeight={46}
-	      >
-	        <MiniProgress percent={78} strokeWidth={8} target={80} />
-	      </ChartCard>
-				<MiniArea
-					 line
-					 color="#cceafe"
-					 height={45}
-					 data={visitData}
-				/>
-			</div>
-		)
-	}
 
 	renderUserHeader() {
 		return (
@@ -195,6 +252,7 @@ class AppHome extends Component {
 					{
 						this.renderCardBelow()
 					}
+
 				</QueueAnim>
 
 			</Card>
