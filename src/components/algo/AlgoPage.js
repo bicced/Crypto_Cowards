@@ -156,7 +156,7 @@ class AlgoPage extends Component {
            <List.Item actions={[<a>edit</a>, <a>more</a>]}>
              <List.Item.Meta
                avatar={<Avatar src="https://image.ibb.co/fVto1o/784915.jpg" />}
-               title={<a>{item.algo_name}</a>}
+               title={<a style={{color: 'orange'}}>{item.algo_name}</a>}
                description= {item.algo}
              />
              <div><Button type='primary' onClick={() => this.activate()}>Activate Bot</Button></div>
@@ -193,7 +193,7 @@ class AlgoPage extends Component {
         {
           this.renderFollowList()
         }
-        <Divider>Selected Bot</Divider>
+        <Divider style={{color: 'orange'}}><Icon type='star-o'/> Selected Bot</Divider>
         {
           this.renderSelectedBot()
         }

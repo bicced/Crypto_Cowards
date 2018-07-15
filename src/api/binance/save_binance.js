@@ -33,7 +33,7 @@ export const getBalance = (user_id) => { //get all post info for list
       authHeaders()
     ).then((data) => {
       console.log(data)
-      res(data.data)
+      res(data.data.balance)
     }).catch((err) => {
       console.log(err.response.data)
       rej(err)

@@ -40,32 +40,6 @@ for (let i = 0; i < 20; i += 1) {
 }
 
 
-const salesPieData = [
-  {
-    x: 'A',
-    y: 4544,
-  },
-  {
-    x: 'B',
-    y: 3321,
-  },
-  {
-    x: 'C',
-    y: 3113,
-  },
-  {
-    x: 'D',
-    y: 2341,
-  },
-  {
-    x: 'E',
-    y: 1231,
-  },
-  {
-    x: 'F',
-    y: 1231,
-  },
-]
 
 const targetTime = new Date().getTime() + 39000000
 
@@ -79,6 +53,7 @@ class AppHome extends Component {
 			visitData: [],
 			ticker: 'BTCUSDT',
 			timeframe: '1d',
+			salesPieData: [ { x: 'A', y: 4544 }, { x: 'B', y: 3321 }, { x: 'C', y: 3113, }]
 		}
 	}
 
@@ -108,17 +83,17 @@ class AppHome extends Component {
 				>
 					<Pie
 						hasLegend
-						title="销售额"
+						title="Allocations"
 						subTitle="Allocations"
 						total={() => (
 							<span
 								dangerouslySetInnerHTML={{
-									__html: yuan(salesPieData.reduce((pre, now) => now.y + pre, 0))
+									__html: '$' + this.state.salesPieData.reduce((pre, now) => now.y + pre, 0).toFixed(2)
 								}}
 							/>
 						)}
-						data={salesPieData}
-						valueFormat={val => <span dangerouslySetInnerHTML={{ __html: yuan(val) }} />}
+						data={this.state.salesPieData}
+						valueFormat={val => <span dangerouslySetInnerHTML={{ __html: '$' + val.toFixed(2) }} />}
 						height={200}
 					/>
 				</ChartCard>
@@ -131,8 +106,12 @@ class AppHome extends Component {
 		getBalance(this.props.user_profile.user_id)
 			.then((data) => {
 				console.log(data)
+				const mapBalance = data.map((coin) => {return { x: coin[0], y: coin[1]}})
+				this.setState({
+					salesPieData: mapBalance
+				})
 			})
-	}
+	}            
 
 	grabGraphs() {
 		getCandlesticks({ticker: this.state.ticker, timeframe: this.state.timeframe})
