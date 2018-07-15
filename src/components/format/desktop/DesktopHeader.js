@@ -72,13 +72,16 @@ const comStyles = () => {
       maxWidth: '100vw',
       // background: 'rgba(81, 151, 214, 1)',
       padding: '15px',
-			background: '#fe8c00',  /* fallback for old browsers */
-			background: '-webkit-linear-gradient(to right, #f83600, #fe8c00)',  /* Chrome 10-25, Safari 5.1-6 */
-			background: 'linear-gradient(to right, #f83600, #fe8c00)', /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+			//backgroundColor: '#ffeecc',
+			borderStyle: 'solid',
+			borderColor: '#fe8c00',
+			background: '#ffffff',  /* fallback for old browsers */
+			background: '-webkit-linear-gradient(to right, #ffffff, #fe8c00)',  /* Chrome 10-25, Safari 5.1-6 */
+			background: 'linear-gradient(to right, #ffffff, #fe8c00)', /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 		},
     font_logo: {
       fontSize: '2.0rem',
-      color: 'white',
+      color: '#fe8c00',
       fontWeight: 'bold',
       fontFamily: `'Reem Kufi', sans-serif`,
 			cursor: 'pointer',
