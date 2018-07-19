@@ -110,9 +110,11 @@ class HomePage extends Component {
 					Login with Gmail <Icon type='right' />
 				</Button>
 				<div style={{ width: '100%', height: '10px' }}></div>
-				<Button onClick={() => this.props.history.push('/signup/beta/landlords')} type='ghost' style={{ width: '250px', color: '#fe8c00', border: '1px solid #fe8c00' }}>
-					Beta Signup <Icon type='right' />
-				</Button>
+				{
+					// <Button onClick={() => this.props.history.push('/signup/beta/landlords')} type='ghost' style={{ width: '250px', color: '#fe8c00', border: '1px solid #fe8c00' }}>
+					// 	Beta Signup <Icon type='right' />
+					// </Button>
+				}
 			</div>
 		)
 	}

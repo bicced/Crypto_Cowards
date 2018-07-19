@@ -32,7 +32,7 @@ export const getBot = (user_id) => {
       {user_id},
       authHeaders()
     ).then((data) => {
-      console.log(data)
+      console.log(data.data.bot)
       res(data.data.bot)
     }).catch((err) => {
       console.log(err.response.data)
