@@ -33,9 +33,19 @@ import {
 	getAllAlgos,
 	getUserFollows,
 } from '../api/algo/user_algos'
+import { getTopRanks } from '../api/cmc/get_top'
 import { getBot } from '../api/bot/selected_bot'
+import { saveTopRanks } from '../actions/cmc/cmc_actions'
 
-
+const binanceSymbols = ['BTC', 'ADA', 'ADX', 'AE', 'AGI', 'AION', 'AMB', 'APPC', 'ARK', 'ARN', 'AST', 'BAT',
+                  'BCC', 'BCD', 'BCN', 'BCPT', 'BLZ', 'BNB', 'BNT', 'BQX', 'BRD', 'BTG', 'BTS', 'CDT',
+                  'CHAT', 'CLOAK', 'CMT', 'CND', 'CVC', 'DASH', 'DATA', 'DENT', 'DGD', 'DLT', 'DNT', 'EDO', 'ELF',
+                  'ENG', 'ENJ', 'EOS', 'ETC', 'ETH', 'EVX', 'FUEL', 'FUN', 'GAS', 'GNT', 'GRS', 'GTO', 'GVT', 'GXS', 'HSR', 'ICN', 'ICX', 'INS',
+                  'IOST', 'IOTA', 'IOTX', 'KEY', 'KMD', 'KNC', 'LEND', 'LINK', 'LOOM', 'LRC', 'LSK', 'LTC', 'LUN', 'MANA', 'MCO', 'MDA', 'MFT',
+                  'MOD', 'MTH', 'MTL', 'NANO', 'NAS', 'NAV', 'NCASH', 'NEBL', 'NEO', 'NPXS', 'NULS', 'NXS', 'OAX', 'OMG', 'ONT', 'OST', 'PIVX',
+                  'POA', 'POE', 'POWR', 'PPT', 'QKC', 'QLC', 'QSP', 'QTUM', 'RCN', 'REP', 'REQ', 'RLC', 'RPX', 'SALT', 'SC', 'SKY', 'SNGLS', 'SNM',
+                  'SNT', 'STEEM', 'STORJ', 'STORM', 'STRAT', 'SUB', 'SYS', 'THETA', 'TNB', 'TNT', 'TRIG', 'TRX', 'USDT', 'VEN', 'VIA', 'VIB', 'VIBE',
+                  'WABI', 'WAN', 'WAVES', 'WINGS', 'WPR', 'WTC', 'XEM', 'XLM', 'XMR', 'XRP', 'XVG', 'XZC', 'YOYO', 'ZEC', 'ZEN', 'ZIL', 'ZRX']
 
 // this 'higher order component'(HOC) creator takes a component (called ComposedComponent)
 // and returns a new component with added functionality
@@ -48,7 +58,12 @@ export default (ComposedComponent) => {
 
 			// do stuff based on the URL
 			this.executeOnURL()
-
+			getTopRanks()
+				.then((data) =>{
+					console.log(data)
+					console.log(data.filter((coin) => binanceSymbols.includes(coin[1])))
+					this.props.saveTopRanks(data.filter((coin) => binanceSymbols.includes(coin[1])))
+				})
 			getAllAlgos()
 				.then((algoData) => {
 					this.props.saveAllAlgos(algoData)
@@ -180,6 +195,7 @@ export default (ComposedComponent) => {
 		saveAllAlgos: PropTypes.func.isRequired,
 		saveUserFollows: PropTypes.func.isRequired,
 		saveUserSelected: PropTypes.func.isRequired,
+		saveTopRanks: PropTypes.func.isRequired,
   }
 
   // for all optional props, define a default value
@@ -205,7 +221,8 @@ export default (ComposedComponent) => {
 			saveUserAlgos,
 			saveAllAlgos,
 			saveUserFollows,
-			saveUserSelected
+			saveUserSelected,
+			saveTopRanks,
     })(AppRootMechanics)
 	)
 }

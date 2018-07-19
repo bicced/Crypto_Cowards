@@ -65,7 +65,8 @@ class SettingsPage extends Component {
 		console.log('Checking api')
 		if (this.state.apiKey.length == 64 && this.state.apiSecret.length == 64) {
 			return false
-		} else {
+		}
+		else {
 			return true
 		}
 	}

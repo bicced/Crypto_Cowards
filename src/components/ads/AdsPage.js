@@ -11,7 +11,7 @@ import QueueAnim from 'rc-queue-anim'
 import { addAlgo, getUserAlgos, addFollows, getUserFollows, deleteFollows } from '../../api/algo/user_algos'
 import { saveUserAlgos, saveUserFollows } from '../../actions/algo/algo_actions'
 import {
-  List, Avatar, Button, Spin, Input, Card, Divider, Icon, message, Checkbox
+  List, Avatar, Button, Spin, Input, Card, Divider, Icon, message, Checkbox, Popover
 } from 'antd'
 import {
 	Tabs, WhiteSpace
@@ -97,8 +97,8 @@ class AdsPage extends Component {
 					initialPage={0}
 					onTabClick={(e) => this.setState({ currentTab: e.title })}
 					renderTab={tab => <span>{tab.title}</span>}
-          tabBarUnderlineStyle={{borderColor: '#FF4500', borderBottomColor: '#FF4500'}}
-          tabBarActiveTextColor='#FF4500'
+          tabBarUnderlineStyle={{borderColor: '#fe8c00', borderBottomColor: '#fe8c00'}}
+          tabBarActiveTextColor='#fe8c00'
 				>
 					<div>
 						{
@@ -212,7 +212,13 @@ class AdsPage extends Component {
                           this.renderCheckbox(item)
                         }
                       </th>
-											<th>{item.algo_name}</th>
+											<th>
+                        {
+                          <Popover content={<p>{JSON.stringify(item.algo)}</p>} title={item.algo_name}>
+                             {item.algo_name}
+                          </Popover>
+                        }
+                      </th>
 											<th>{item.user_id}</th>
 											<th>asdasd</th>
 											<th>asdasd</th>

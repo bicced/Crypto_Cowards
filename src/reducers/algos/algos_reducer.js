@@ -9,7 +9,7 @@ const INITIAL_STATE = {
   user_algos: [],
   all_algos: [],
   user_follows: [],
-  user_selected: '',
+  user_selected: [],
 }
 
 export default (state = INITIAL_STATE, action) => {
