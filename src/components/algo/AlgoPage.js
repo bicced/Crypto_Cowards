@@ -48,6 +48,7 @@ class AlgoPage extends Component {
       days: 0,
       total: 0,
       rebType: '',
+      activatedButton: false,
     }
   }
 
@@ -331,10 +332,10 @@ class AlgoPage extends Component {
       <div>
         <Radio.Group type='primary' value={this.state.selection} onChange={e => this.setState({ rebType: e.target.value})}>
           <Popover content={<p>Rebalance into selected ranks</p>} title="By Rank">
-  				    <Radio.Button value='rank'>By rank</Radio.Button>
+  				    <Radio.Button value='rank'>By Rank</Radio.Button>
           </Popover>
           <Popover content={<p>Rebalance into selected coins</p>} title="By Coin">
-  				    <Radio.Button value='coin'>By coin</Radio.Button>
+  				    <Radio.Button value='coin'>By Coin</Radio.Button>
           </Popover>
   			</Radio.Group>
       </div>
@@ -520,10 +521,17 @@ class AlgoPage extends Component {
 	}
 
   activate() {
-    // activateBot(this.props.user_selected)
-    //   .then((data) => {
-    //     console.log(data)
-    //   })
+    this.setState({activatedButton: true})
+    activateBot({ user_id: this.props.user_profile.user_id})
+      .then((data) => {
+        this.setState({activatedButton: false})
+        if (data == 'success') {
+          message.success('Successfully activated')
+        }
+        else {
+          message.error('Error')
+        }
+      })
   }
 
   renderSelectedBot() {
@@ -545,7 +553,7 @@ class AlgoPage extends Component {
                  </Popover>
                }
              />
-             <div><Button type='primary' onClick={() => this.activate()}>Activate Bot</Button></div>
+             <div><Button type='primary' loading={this.state.activatedButton} onClick={() => this.activate()}>Activate Bot</Button></div>
            </List.Item>
          )}
        />
