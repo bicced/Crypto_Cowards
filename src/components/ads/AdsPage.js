@@ -86,7 +86,6 @@ class AdsPage extends Component {
   		}))
 			.filter(item => item != undefined)
 		)
-
 	}
 
   renderAlgoTabs() {

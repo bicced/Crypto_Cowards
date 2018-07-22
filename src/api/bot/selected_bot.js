@@ -52,7 +52,7 @@ export const activateBot = (user_info) => {
       authHeaders()
     ).then((data) => {
       console.log(data)
-      res(data.data.bot)
+      res(data.data)
     }).catch((err) => {
       console.log(err.response.data)
       rej(err)
