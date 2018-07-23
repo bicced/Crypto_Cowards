@@ -20,6 +20,7 @@ import AppRoutes from './AppRoutes'
 import HomePage from './pages/HomePage'
 import Logout from './auth/Logout'
 import TweenOne from 'rc-tween-one'
+import LandingPage from './landing/LandingPage'
 import '../styles/pretty_scrollbar.css'
 
 
@@ -28,17 +29,28 @@ class AppRoot extends Component {
 
 	render() {
     if (this.props.authentication_loaded) {
-      return (
-        <Switch>
-          <Route exact path='/' render={HomePage} />
-          <Route exact path='/login' render={HomePage} />
-          <Route exact path='/logout' render={Logout} />
+      if (this.props.authenticated) {
+        return (
+          <Switch>
+            <Route exact path='/' render={HomePage} />
+            <Route exact path='/login' render={HomePage} />
+            <Route exact path='/logout' render={Logout} />
 
-          <Route path='/app/*' component={AppRoutes} />
+            <Route path='/app/*' component={AppRoutes} />
 
-        </Switch>
-      )
-    } else {
+          </Switch>
+        )
+      }
+      else {
+        return (
+          <Switch>
+            <Route exact path='/' render={LandingPage} />
+            <Route exact path='/login' render={HomePage} />
+          </Switch>
+        )
+      }
+    }
+    else {
       return (
         <div style={comStyles().loadingContainer}>
           <TweenOne
@@ -58,6 +70,7 @@ class AppRoot extends Component {
 AppRoot.propTypes = {
 	history: PropTypes.object.isRequired,
   authentication_loaded: PropTypes.bool.isRequired,
+  authenticated: PropTypes.bool.isRequired,
 }
 
 // for all optional props, define a default value
@@ -72,6 +85,7 @@ const RadiumHOC = Radium(AppRoot)
 const mapReduxToProps = (redux) => {
 	return {
     authentication_loaded: redux.auth.authentication_loaded,
+    authenticated: redux.auth.authenticated,
 	}
 }
 
