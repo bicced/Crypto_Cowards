@@ -70,7 +70,7 @@ class AppHome extends Component {
 						<CountDown style={{ fontSize: 30, marginTop: '10%' }} target={targetTime} />
 						<WaterWave
 							height={200}
-							title="Time used"
+							title="Time left"
 							percent={30}
 							color='#FFA500'
 						/>
@@ -78,7 +78,7 @@ class AppHome extends Component {
 				</ChartCard>
 
 				<ChartCard
-					title="Performance"
+					title="Portfolio"
 					style={{width: '50%'}}
 				>
 					<Pie
@@ -219,7 +219,7 @@ class AppHome extends Component {
 	renderUserHeader() {
 		return (
 			<div style={{ display: 'flex', flexDirection: 'row', minWidth: '100%', }}>
-				<Icon type="home" style={{ fontSize: '3REM'}} />
+				<Icon type="dashboard" style={{ fontSize: '3REM'}} />
 				<h2 style={{ fontSize: '230%', marginLeft: '2%' }}>{` Dashboard`}</h2>
 			</div>
 		)

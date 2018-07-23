@@ -19,8 +19,8 @@ import DesktopSkeleton from './format/desktop/DesktopSkeleton'
 import MobileSkeleton from './format/mobile/MobileSkeleton'
 import RequireAuth from './auth/RequireAuth'
 import AppHome from './home/AppHome'
-import AdsPage from './ads/AdsPage'
-import AlgoPage from './algo/AlgoPage'
+import StrategyPage from './strategy/StrategyPage'
+import BotPage from './bot/BotPage'
 import SettingsPage from './settings/SettingsPage'
 import RegistrationHome from './registration/RegistrationHome'
 
@@ -44,14 +44,14 @@ class AppRoutes extends Component {
   componentWillMount() {
     // this.updateWidth()
     const path = this.props.history.location.pathname
-    if (path.startsWith('/app/ads')) {
-      this.props.changeSelectedTab('ads')
+    if (path.startsWith('/app/strategy')) {
+      this.props.changeSelectedTab('strategy')
     } else if (path.startsWith('/app/settings')) {
       this.props.changeSelectedTab('settings')
     } else if (path.startsWith('/app/home')) {
       this.props.changeSelectedTab('home')
-    } else if (path.startsWith('/app/algo')) {
-      this.props.changeSelectedTab('algo')
+    } else if (path.startsWith('/app/bot')) {
+      this.props.changeSelectedTab('bot')
     }
   }
 
@@ -77,8 +77,8 @@ class AppRoutes extends Component {
 		return (
 			<Switch>
         <Route exact path='/app/home' component={RequireAuth(AppHome)} />
-        <Route exact path='/app/ads' component={RequireAuth(AdsPage)} />
-        <Route exact path='/app/algo' component={RequireAuth(AlgoPage)} />
+        <Route exact path='/app/strategy' component={RequireAuth(StrategyPage)} />
+        <Route exact path='/app/bot' component={RequireAuth(BotPage)} />
         <Route exact path='/app/settings' component={RequireAuth(SettingsPage)} />
         <Route exact path='/app/registration' component={RequireAuth(RegistrationHome)} />
       </Switch>
@@ -111,15 +111,15 @@ class AppRoutes extends Component {
     let desktop_navs = []
     if (this.props.authenticated) {
       navs = [
-        { key: 'home', title: 'Home', path: '/app/home', icon: (<Icon type='home' />), selectedIcon: (<Icon type='home' style={{ color: '#FF4500' }} />) },
-        { key: 'ads', title: 'Ads', path: '/app/ads', icon: (<Icon type='appstore' />), selectedIcon: (<Icon type='appstore' style={{ color: '#FF4500' }} />) },
-        { key: 'algo', title: 'Algo', path: '/app/algo', icon: (<Icon type='switcher' />), selectedIcon: (<Icon type='switcher' style={{ color: '#FF4500' }} />) },
+        { key: 'home', title: 'Dashboard', path: '/app/home', icon: (<Icon type='dashboard' />), selectedIcon: (<Icon type='dashboard' style={{ color: '#FF4500' }} />) },
+        { key: 'strategy', title: 'Strategy', path: '/app/strategy', icon: (<Icon type='switcher' />), selectedIcon: (<Icon type='switcher' style={{ color: '#FF4500' }} />) },
+        { key: 'bot', title: 'Bot', path: '/app/bot', icon: (<Icon type='rocket' />), selectedIcon: (<Icon type='rocket' style={{ color: '#FF4500' }} />) },
         { key: 'settings', title: 'Settings', path: '/app/settings', icon: (<Icon type='setting' />), selectedIcon: (<Icon type='setting' style={{ color: '#FF4500' }} />) },
       ]
       desktop_navs = [
-        { key: 'home', title: 'Home', path: '/app/home', icon: (<Icon type='home' />) },
-        { key: 'ads', title: 'Ads', path: '/app/ads', icon: (<Icon type='appstore' />) },
-        { key: 'algo', title: 'Algo', path: '/app/algo', icon: (<Icon type='switcher' />)},
+        { key: 'home', title: 'Dashboard', path: '/app/home', icon: (<Icon type='dashboard' />) },
+        { key: 'strategy', title: 'Strategy', path: '/app/strategy', icon: (<Icon type='switcher' />) },
+        { key: 'bot', title: 'Bot', path: '/app/bot', icon: (<Icon type='rocket' />)},
         { key: 'settings', title: 'Settings', path: '/app/settings', icon: (<Icon type='setting' />) },
       ]
     }

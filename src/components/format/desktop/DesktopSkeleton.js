@@ -206,15 +206,15 @@ const comStyles = (menu_hidden) => {
       maxWidth: '100vw',
     },
     menuContainer: {
-      minWidth: '10%',
-      maxWidth: '15%',
+      minWidth: '150px',
+      maxWidth: '12%',
     },
     contentContainer: {
       display: 'flex',
       flexDirection: 'column',
       maxHeight: '93vh',
-      minWidth: '85%',
-      maxWidth: '20%',
+      minWidth: '88%',
+      maxWidth: '40%',
       // overflowY: 'scroll',
       // ...attrs,
     }
