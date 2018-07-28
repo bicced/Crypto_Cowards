@@ -10,13 +10,14 @@ import { withRouter } from 'react-router-dom'
 import QueueAnim from 'rc-queue-anim'
 import { addAlgo, getUserAlgos, getAllAlgos } from '../../api/algo/user_algos'
 import { saveUserAlgos, saveUserSelected, saveAllAlgos } from '../../actions/algo/algo_actions'
+import { checkRebalancing } from '../../api/test/test'
 import {
   List, Avatar, Button, Spin, Input, Card, Divider, Icon, message, Radio, Slider, Popover
 } from 'antd'
 import {
 	WhiteSpace
 } from 'antd-mobile'
-import { saveBot, getBot, activateBot } from '../../api/bot/selected_bot'
+import { saveBot, getBot, activateBot, deactivateBot } from '../../api/bot/selected_bot'
 const { TextArea } = Input
 
 const binanceSymbols = ['BTC', 'ADA', 'ADX', 'AE', 'AGI', 'AION', 'AMB', 'APPC', 'ARK', 'ARN', 'AST', 'BAT',
@@ -524,14 +525,45 @@ class BotPage extends Component {
     this.setState({activatedButton: true})
     activateBot({ user_id: this.props.user_profile.user_id})
       .then((data) => {
-        this.setState({activatedButton: false})
         if (data == 'success') {
           message.success('Successfully activated')
+          getBot(this.props.user_profile.user_id)
+          .then((data) => {
+            this.setState({activatedButton: false})
+            this.props.saveUserSelected(data)
+          })
         }
-        else {
-          message.error('Error')
+        else if ( data == 'Insufficent funds'){
+          this.setState({activatedButton: false})
+          message.error('Insufficent funds')
+        }
+        else if ( data == 'Api Keys DNE') {
+          this.setState({activatedButton: false})
+          message.error('Api Keys DNE')
         }
       })
+  }
+
+  deactivate() {
+    this.setState({activatedButton: true})
+    deactivateBot({ bot_id: this.props.user_selected[0].bot_id})
+      .then(() => {
+        getBot(this.props.user_profile.user_id)
+        .then((data) => {
+          message.success('Successfully deactivated')
+          this.setState({activatedButton: false})
+          this.props.saveUserSelected(data)
+        })
+      })
+  }
+
+  isActive() {
+    if (this.props.user_selected[0].active == false) {
+      return <Button type='primary' loading={this.state.activatedButton} onClick={() => this.activate()}>Activate Strategy</Button>
+    }
+    else if (this.props.user_selected[0].active == true){
+      return <Button type='primary' loading={this.state.activatedButton} onClick={() => this.deactivate()}>Deactivate Strategy</Button>
+    }
   }
 
   renderSelectedBot() {
@@ -553,12 +585,16 @@ class BotPage extends Component {
                  </Popover>
                }
              />
-             <div><Button type='primary' loading={this.state.activatedButton} onClick={() => this.activate()}>Activate Strategy</Button></div>
+             <div>{this.isActive()}</div>
            </List.Item>
          )}
        />
       )
     }
+  }
+
+  runtest() {
+    checkRebalancing()
   }
 
 
@@ -570,6 +606,7 @@ class BotPage extends Component {
 				style={comStyles().scroll}
 				bordered={false}
 			>
+        <Button onClick={() => this.runtest()}>test</Button>
 				<QueueAnim type="bottom" component="div">
         {
           this.renderHeader()

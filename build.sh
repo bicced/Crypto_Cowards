@@ -1,1 +1,1 @@
-docker build -t renthero_me .
+docker build -t crypto_cowards .
