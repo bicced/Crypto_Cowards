@@ -61,3 +61,23 @@ export const activateBot = (user_info) => {
   })
   return p
 }
+
+
+export const deactivateBot = (user_info) => {
+  console.log('hit api call')
+  const p = new Promise((res, rej) => {
+    axios.post(
+      `${ACCOUNTS_MICROSERVICE}/deactivate_bot`,
+      user_info,
+      authHeaders()
+    ).then((data) => {
+      console.log(data)
+      res(data.data)
+    }).catch((err) => {
+      console.log(err.response.data)
+      rej(err)
+    })
+
+  })
+  return p
+}

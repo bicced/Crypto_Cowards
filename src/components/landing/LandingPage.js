@@ -37,7 +37,19 @@ class LandingPage extends Component {
   				</div>
   				<div style={comStyles().midbar}>
   					<div>
-  						<div style={comStyles().topic} onClick={() => console.log(CryptoCowards)}>Confident In Your Trades?</div>
+  						<div style={comStyles().topic} onClick={() => console.log(CryptoCowards)}>Trade cryptocurrency automatically using proven strategies</div>
+  						<br/><br/>
+  						<div style={{fontSize:'25px'}} onClick={() => console.log(signin)}>
+  							- Make returns like a professional cryptocurrency trader<br/>
+  							&nbsp; by mimicing their allocations <br/><br/>
+								
+  							- Automatically rebalance your portfolio or execute<br/>
+                &nbsp; trading algorithms using our AI trading bots <br/><br/>
+
+  							- Follow predetermined strategies by other traders <br/>
+                &nbsp; or create your own rebalancing strategies
+  						</div>
+							{/*<div style={comStyles().topic} onClick={() => console.log(CryptoCowards)}>Confident In Your Trades?</div>
   						<br/><br/>
   						<div style={{fontSize:'25px'}} onClick={() => console.log(signin)}>
   							- Mimic professional cryptocurrency <br/>
@@ -47,7 +59,7 @@ class LandingPage extends Component {
 
   							- Follow predetermined strategies by other traders <br/>
                 &nbsp; or create your own rebalancing strategies
-  						</div>
+  						</div>*/}
   						<br/><br/>
   						<div style={{marginLeft: "5%"}}>
   							<Button onClick={() => this.props.history.push('/login')} inline type="default" style={{marginRight:'5%'}}>Sign in</Button> &nbsp;
@@ -77,7 +89,8 @@ class LandingPage extends Component {
         </div>
 
 				<div style={comStyles().containerThree}>
-          <div style={comStyles().topicTwo} ><b>What do I need to begin?</b></div>
+          <div style={comStyles().topicTwo} ><b>Historical performace: One of our strategies (Cowards 15)</b></div>
+
         </div>
       </div>
 		)
@@ -184,9 +197,9 @@ const comStyles = () => {
 		containerThree: {
       display: 'flex',
       flexDirection: 'column',
-			background: '#ffffff',  /* fallback for old browsers */
-			background: '-webkit-linear-gradient(to right, #ffffff, #fe8c00)',  /* Chrome 10-25, Safari 5.1-6 */
-			background: 'linear-gradient(to right, #ffffff, #fe8c00)', /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+			background: '#f83600',  /* fallback for old browsers */
+      background: '-webkit-linear-gradient(to right, #fe8c00, #f83600,)',  /* Chrome 10-25, Safari 5.1-6 */
+      background: 'linear-gradient(to right, #fe8c00, #f83600)', /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 			height: '100vh',
       color: 'white',
 			fontFamily: 'Sans-serif',
