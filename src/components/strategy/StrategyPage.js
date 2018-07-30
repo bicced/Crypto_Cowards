@@ -8,19 +8,43 @@ import PropTypes from 'prop-types'
 import Rx from 'rxjs'
 import { withRouter } from 'react-router-dom'
 import QueueAnim from 'rc-queue-anim'
-import { addAlgo, getUserAlgos, addFollows, getUserFollows, deleteFollows } from '../../api/algo/user_algos'
-import { saveUserAlgos, saveUserFollows } from '../../actions/algo/algo_actions'
+import { addAlgo, getUserAlgos, addFollows, getUserFollows, deleteFollows, getAllAlgos } from '../../api/algo/user_algos'
+import { saveUserAlgos, saveUserFollows, saveAllAlgos } from '../../actions/algo/algo_actions'
+import Trend from 'ant-design-pro/lib/Trend'
+import numeral from 'numeral'
 import {
-  List, Avatar, Button, Spin, Input, Card, Divider, Icon, message, Checkbox, Popover
+  List, Avatar, Button, Spin, Input, Card, Divider, Icon, message, Checkbox, Popover, Radio, Slider,
 } from 'antd'
 import {
 	Tabs, WhiteSpace
 } from 'antd-mobile'
 
 const tabs = [
-  { title: 'Follow'},
+  { title: 'Public'},
   { title: 'Following'},
+  { title: 'Created'},
 ]
+const { TextArea } = Input
+
+const binanceSymbols = ['BTC', 'ADA', 'ADX', 'AE', 'AGI', 'AION', 'AMB', 'APPC', 'ARK', 'ARN', 'AST', 'BAT',
+                  'BCC', 'BCD', 'BCN', 'BCPT', 'BLZ', 'BNB', 'BNT', 'BQX', 'BRD', 'BTG', 'BTS', 'CDT',
+                  'CHAT', 'CLOAK', 'CMT', 'CND', 'CVC', 'DASH', 'DATA', 'DENT', 'ARDR', 'DGD', 'DLT', 'DNT', 'EDO', 'ELF',
+                  'ENG', 'ENJ', 'EOS', 'ETC', 'ETH', 'EVX', 'FUEL', 'FUN', 'GAS', 'GNT', 'GRS', 'GTO', 'GVT', 'GXS', 'HSR', 'ICN', 'ICX', 'INS',
+                  'IOST', 'IOTA', 'IOTX', 'KEY', 'KMD', 'KNC', 'LEND', 'LINK', 'LOOM', 'LRC', 'LSK', 'LTC', 'LUN', 'MANA', 'MCO', 'MDA', 'MFT',
+                  'MOD', 'MTH', 'MTL', 'NANO', 'NAS', 'NAV', 'NCASH', 'NEBL', 'NEO', 'NPXS', 'NULS', 'NXS', 'OAX', 'OMG', 'ONT', 'OST', 'PIVX',
+                  'POA', 'POE', 'POWR', 'PPT', 'QKC', 'QLC', 'QSP', 'QTUM', 'RCN', 'REP', 'REQ', 'RLC', 'RPX', 'SALT', 'SC', 'SKY', 'SNGLS', 'SNM',
+                  'SNT', 'STEEM', 'STORJ', 'STORM', 'STRAT', 'SUB', 'SYS', 'THETA', 'TNB', 'TNT', 'TRIG', 'TRX', 'TUSD', 'VEN', 'VIA', 'VIB', 'VIBE',
+                  'WABI', 'WAN', 'WAVES', 'WINGS', 'WPR', 'WTC', 'XEM', 'XLM', 'XMR', 'XRP', 'XVG', 'XZC', 'YOYO', 'ZEC', 'ZEN', 'ZIL', 'ZRX']
+
+const binanceRanks = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19',
+                        '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31', '32', '33', '34', '35', '36', '37', '38',
+                          '39', '40', '41', '42', '43', '44', '45', '46', '47', '48', '49', '50']
+
+const ranked = [[1, 1], [2, 2], [3, 3], [4, 4], [5, 5], [6, 6], [7, 7], [8, 8], [9, 9], [10, 10], [11, 11],
+                [12, 12], [13, 13], [14, 14], [15, 15], [16, 16], [17, 17], [18, 18], [19, 19], [20, 20], [21, 21], [22, 22], [23, 23],
+                  [24, 24], [25, 25], [26, 26], [27, 27], [28, 28], [29, 29], [30, 30], [31, 31], [32, 32], [33, 33], [34, 34], [35, 35],
+                    [36, 36], [37, 37], [38, 38], [39, 39], [40, 40], [41, 41], [42, 42], [43, 43], [44, 44], [45, 45], [46, 46], [47, 47],
+                      [48, 48], [49, 49], [50, 50]]
 
 class StrategyPage extends Component {
 
@@ -29,8 +53,23 @@ class StrategyPage extends Component {
     this.state = {
 			followList: [],
 			unfollowList: [],
-			currentTab: 'Follow',
+			currentTab: 'Public',
+      algoName: '',
+      type: '',
+      slide: [1, 3],
+      rebType: '',
+      days: 0,
+      arrayCoin: [],
+      arrayRank: [],
+      public: false,
     }
+  }
+
+  componentWillMount() {
+    this.setState({
+      arrayCoin: binanceSymbols.map((coin) => { return {symbol: coin, value: 0}}),
+      arrayRank: binanceRanks.map((coin) => { return {symbol: coin, value: 0}})
+    })
   }
 
 	followSelected() {
@@ -52,7 +91,7 @@ class StrategyPage extends Component {
 
 	unfollowSelected() {
 		console.log('remove followers')
-		deleteFollows({ follow_ids: this.state.unfollowList})
+		deleteFollows({ follow_ids: this.state.unfollowList, user_id: this.props.user_profile.user_id})
 			.then((data) => {
 				console.log(data)
 				if (data) {
@@ -111,13 +150,18 @@ class StrategyPage extends Component {
 						}
 						<Button type='primary' onClick={() => this.unfollowSelected()} >Unfollow Selected</Button>
 					</div>
+          <div>
+            {
+              this.renderAlgoList(this.props.user_algos)
+            }
+					</div>
 				</Tabs>
 			</div>
     )
   }
 
 	checkTheBox(algoStatus) {
-		if (this.state.currentTab == 'Follow') {
+		if (this.state.currentTab == 'Public') {
 			if(algoStatus.checked == true){
 				let followUpdate = this.state.followList
 				followUpdate.push(algoStatus.value.algo_id)
@@ -133,7 +177,7 @@ class StrategyPage extends Component {
 				})
 			}
 		}
-		else {
+		else if (this.state.currentTab == 'Following') {
 			if(algoStatus.checked == true){
 				let unfollowUpdate = this.state.unfollowList
 				unfollowUpdate.push(algoStatus.value.follow_id)
@@ -165,6 +209,25 @@ class StrategyPage extends Component {
     }
   }
 
+  popoverAlgo(algo, algoType) {
+    if (algoType.type == 'Rebalance') {
+      if (algoType.reb_type == 'rank') {
+        let prettied = ''
+        algo.forEach((ranks) => {prettied = prettied + 'RANK ' + ranks.symbol + ': ' + ranks.value + '%,   '})
+        return (
+          <p>{prettied}</p>
+        )
+      }
+      else if (algoType.reb_type == 'coin') {
+        let prettied = ''
+        algo.forEach((coins) => {prettied = prettied + coins.symbol + ': ' + coins.value + '%,   '})
+        return (
+          <p>{prettied}</p>
+        )
+      }
+    }
+  }
+
 	renderAlgoList(typeList) {
 		return (
 			<div style={comStyles().algoList}>
@@ -192,9 +255,9 @@ class StrategyPage extends Component {
 								<th width="8%"></th>
 								<th>Name</th>
 								<th>Owner</th>
-								<th>% Day</th>
-								<th>% Week</th>
-								<th>% Month</th>
+								<th>Hour</th>
+								<th>Day</th>
+								<th>Week</th>
 							</tr>
 						</table>
 					}
@@ -204,6 +267,7 @@ class StrategyPage extends Component {
 							<List.Item.Meta
 								description={
 									<table style={comStyles().table}>
+                    <Popover content={<p>{this.popoverAlgo(item.algo, item.algo_type)}</p>} title={item.algo_name + ' (' + item.algo_type.type + ': ' + item.algo_type.reb_type + ')'}>
 										<tr>
 											<th width="8%">
                         <Avatar src="https://image.ibb.co/fVto1o/784915.jpg" /> &nbsp;
@@ -211,18 +275,13 @@ class StrategyPage extends Component {
                           this.renderCheckbox(item)
                         }
                       </th>
-											<th>
-                        {
-                          <Popover content={<p>{JSON.stringify(item.algo)}</p>} title={item.algo_name}>
-                             {item.algo_name}
-                          </Popover>
-                        }
-                      </th>
+											<th>{item.algo_name}</th>
 											<th>{item.user_id}</th>
-											<th>asdasd</th>
-											<th>asdasd</th>
-											<th>asdasd</th>
+											<th>{this.calculatePercent(item.algo, item.algo_type, 2)}</th>
+											<th>{this.calculatePercent(item.algo, item.algo_type, 3)}</th>
+											<th>{this.calculatePercent(item.algo, item.algo_type, 4)}</th>
 										</tr>
+                    </Popover>
 									</table>
 								}
 							/>
@@ -233,6 +292,60 @@ class StrategyPage extends Component {
 		)
 	}
 
+  calculatePercent(algo, algo_type, index) {
+    console.log(algo)
+    if (algo_type.type == 'Rebalance') {
+      if (algo_type.reb_type == 'rank') {
+        let thingy = {}
+        const symbols = algo.map(coin => coin.symbol)
+        const values = algo.forEach(coin => thingy[coin.symbol] = coin.value)
+        console.log(symbols)
+        console.log(thingy)
+        const used = this.props.top_ranks.filter(coin => symbols.includes(coin[0]))
+        console.log(used)
+        const percents = used.map(coin => (coin[index] * 1000) * thingy[coin[0]]).reduce((a,b) => a + b)/100000
+        console.log(percents)
+        if (percents >= 0) {
+          return (
+            <Trend flag='up' reverseColor={true}>
+              {percents}%
+            </Trend>
+          )
+        } else {
+          return (
+            <Trend flag='down' reverseColor={true}>
+              {percents}%
+            </Trend>
+          )
+        }
+      }
+      else if (algo_type.reb_type == 'coin') {
+        let thingy = {}
+        const symbols = algo.map(coin => coin.symbol)
+        const values = algo.forEach(coin => thingy[coin.symbol] = coin.value)
+        const used = this.props.top_ranks.filter(coin => symbols.includes(coin[1]))
+        const percents = used.map(coin => (coin[index] * 1000) * thingy[coin[1]]).reduce((a,b) => a + b)/100000
+        console.log(symbols)
+        console.log(values)
+        console.log(used)
+        if (percents >= 0) {
+          return (
+            <Trend flag='up' reverseColor={true}>
+              {percents}%
+            </Trend>
+          )
+        } else {
+          return (
+            <Trend flag='down' reverseColor={true}>
+              {percents}%
+            </Trend>
+          )
+        }
+      }
+    }
+
+  }
+
   renderHeader() {
 		return (
 			<div style={{ display: 'flex', flexDirection: 'row', minWidth: '100%', }}>
@@ -241,6 +354,353 @@ class StrategyPage extends Component {
 			</div>
 		)
 	}
+
+  renderAlgoInputs() {
+    return (
+      <div>
+        <Radio.Group type='primary' value={this.state.selection} onChange={e => this.setState({ type: e.target.value})}>
+          <Popover content={<p>Select a range from top 1-50 Binance coins by Marketcap. <br/> Rebalance portfolio and choose time interval between subsequent rebalances</p>} title="Rebalancing">
+  				    <Radio.Button value='Rebalance'>Rebalance</Radio.Button>
+          </Popover>
+          <Popover content={<p>Create your own algorithms to trade with</p>} title="Custom Algorithms">
+  				    <Radio.Button disabled value='Custom'>Custom</Radio.Button>
+          </Popover>
+  			</Radio.Group>
+        <WhiteSpace />
+        {
+          this.renderInputType()
+        }
+      </div>
+    )
+  }
+
+  renderInputType() {
+    if (this.state.type == 'Rebalance') {
+      return (
+        <div>
+          <Input placeholder='Name of Algo' onChange={(e) => this.setState({ algoName: e.target.value})} />
+          <WhiteSpace/>
+          <Popover content={<p>Checked: Strategy is public for other users to follow <br/> Unchecked: Strategy is private</p>} title="Public Strategy">
+            <Checkbox onChange={(e) => this.setState({public: e.target.checked})}>Make strategy public</Checkbox>
+          </Popover>
+          <WhiteSpace/>
+          {
+            this.renderRankingType()
+          }
+          <WhiteSpace/>
+          {
+            this.renderCoinOrRank()
+          }
+        </div>
+      )
+    }
+    else if (this.state.type == 'Custom'){
+      return (
+        <div>
+          <Input placeholder='Name of Algo' onChange={(e) => this.setState({ algoName: e.target.value})} />
+          <WhiteSpace/>
+          <TextArea placeholder='Algorithm code' onChange={(e) => this.setState({ algo: e.target.value})} rows={4} />
+          <WhiteSpace/>
+          <Button type='primary' onClick={() => this.submitAlgo() }>Submit Algo</Button>
+        </div>
+      )
+    }
+    else {
+      return (null)
+    }
+  }
+
+  renderRankingType() {
+    return (
+      <div>
+        <Radio.Group type='primary' value={this.state.selection} onChange={e => this.setState({ rebType: e.target.value})}>
+          <Popover content={<p>Rebalance into selected ranks</p>} title="By Rank">
+  				    <Radio.Button value='rank'>By Rank</Radio.Button>
+          </Popover>
+          <Popover content={<p>Rebalance into selected coins</p>} title="By Coin">
+  				    <Radio.Button value='coin'>By Coin</Radio.Button>
+          </Popover>
+  			</Radio.Group>
+      </div>
+    )
+  }
+
+  renderCoinOrRank() {
+    if (this.state.rebType == 'coin') {
+      return (
+        <div>
+          <Slider range step={1} max={50} min={1} defaultValue={this.state.slide} onChange={(e) => this.setState({ slide: e})} onAfterChange={(e) => this.setState({ slide: e}, console.log(this.state.slide))} />
+          <WhiteSpace/>
+          {
+            this.outOfHundred()
+          }
+          <WhiteSpace/>
+          {
+            this.renderCoins()
+          }
+          <WhiteSpace/>
+          <Button type='primary' onClick={() => this.onSubmit()}>Submit Algo</Button>
+        </div>
+      )
+    }
+    else if (this.state.rebType == 'rank'){
+      return (
+        <div>
+          <Input placeholder='Days between rebalancing (0-365)' onChange={(e) => this.setState({days: parseInt(e.target.value)})} />
+          <WhiteSpace/>
+          <Slider range step={1} max={50} min={1} defaultValue={this.state.slide} onChange={(e) => this.setState({ slide: e})} onAfterChange={(e) => this.setState({ slide: e}, console.log(this.state.slide))} />
+          <WhiteSpace/>
+          {
+            this.outOfHundred()
+          }
+          <WhiteSpace/>
+          {
+            this.renderRanks()
+          }
+          <WhiteSpace/>
+          <Button type='primary' onClick={() => this.onSubmit()}>Submit Algo</Button>
+        </div>
+      )
+    }
+    else {
+      return (
+        null
+      )
+    }
+  }
+
+  outOfHundred() {
+    if (this.state.rebType == 'coin') {
+      const selectedCoins =this.state.arrayCoin.filter((obj) => this.props.top_ranks.slice(this.state.slide[0] - 1, this.state.slide[1]).map((coin) => {return coin[1]}).includes(obj.symbol))
+      console.log(selectedCoins)
+      let total = 0
+      selectedCoins.forEach((pair) => total += pair.value)
+      return (
+        <div style={{ display: 'flex', justifyContent: 'space-around', flexDirection: 'row', fontSize: '150%'}}>
+          <div>Allocations: {total}/100%</div>
+          <div>Rankings by Marketcap: {this.state.slide[0]}-{this.state.slide[1]}</div>
+        </div>
+      )
+    }
+    else if (this.state.rebType == 'rank') {
+
+      const selectedCoins = this.state.arrayRank.filter((obj) => ranked.slice(this.state.slide[0] - 1, this.state.slide[1]).map((coin) => {return coin[1]}).includes(obj.symbol))
+      console.log(selectedCoins)
+      let total = 0
+      selectedCoins.forEach((pair) => total += pair.value)
+      return (
+        <div style={{ display: 'flex', justifyContent: 'space-around', flexDirection: 'row', fontSize: '150%'}}>
+          <div>Allocations: {total}/100%</div>
+          <div>Rankings by Marketcap: {this.state.slide[0]}-{this.state.slide[1]}</div>
+        </div>
+      )
+    }
+  }
+
+  renderCoins() {
+    const handleChange = (val, coin) => {
+      const filtered = this.state.arrayCoin.filter((obj) => obj.symbol !== coin )
+      console.log(filtered)
+      console.log(val)
+      if (!val) {
+        console.log('caught')
+        val = 0
+      }
+      this.setState({
+        arrayCoin: filtered.concat({ symbol: coin, value: parseInt(val)})
+      })
+    }
+    let topCoins = this.props.top_ranks.slice(this.state.slide[0] - 1, this.state.slide[1])
+
+    return (
+      <List
+      grid={{ gutter: 16, xs: 2, sm: 2, md: 6, lg: 6, xl: 8, xxl: 8 }}
+      dataSource={topCoins}
+      renderItem={item => (
+        <List.Item>
+          <Card title={item[1]}><Input value={this.findValues(item[1])} onChange={(e) => handleChange(e.target.value, item[1])} placeholder='0'></Input></Card>
+        </List.Item>
+      )}
+      />
+    )
+  }
+
+  renderRanks() {
+    const handleChange = (val, coin) => {
+      const filtered = this.state.arrayRank.filter((obj) => obj.symbol !== coin)
+      console.log(filtered)
+      console.log(val)
+      if (!val) {
+        console.log('caught')
+        val = 0
+      }
+      this.setState({
+        arrayRank: filtered.concat({ symbol: coin, value: parseInt(val)})
+      })
+    }
+
+    let topRanks = ranked.slice(this.state.slide[0] - 1, this.state.slide[1])
+
+    return (
+      <List
+      grid={{ gutter: 16, xs: 2, sm: 2, md: 6, lg: 6, xl: 8, xxl: 8 }}
+      dataSource={topRanks}
+      renderItem={item => (
+        <List.Item>
+          <Card title={'RANK ' + item[0]}><Input value={this.findValues(item[0])} onChange={(e) => handleChange(e.target.value, item[0])} placeholder='0'></Input></Card>
+        </List.Item>
+      )}
+      />
+    )
+  }
+
+  findValues(coin) {
+
+    if (this.state.rebType == 'coin') {
+      console.log('hitfind')
+      const selectedCoins =this.state.arrayCoin.filter((obj) => this.props.top_ranks.slice(this.state.slide[0] - 1, this.state.slide[1]).map((coin) => {return coin[1]}).includes(obj.symbol))
+      console.log(coin)
+      const newShit = selectedCoins.filter((stuff) => stuff.symbol == coin && stuff.value !== 0)
+      console.log(newShit)
+      if (newShit.length > 0) {
+        return newShit[0].value
+      }
+      else {
+        return null
+      }
+    }
+    else if (this.state.rebType == 'rank') {
+      console.log('hitfind')
+      const selectedCoins =this.state.arrayRank.filter((obj) => ranked.slice(this.state.slide[0] - 1, this.state.slide[1]).map((coin) => {return coin[1]}).includes(obj.symbol))
+      console.log(coin)
+      const newShit = selectedCoins.filter((stuff) => stuff.symbol == coin && stuff.value !== 0)
+      console.log(newShit)
+      if (newShit.length > 0) {
+        return newShit[0].value
+      }
+      else {
+        return null
+      }
+    }
+  }
+
+  submitAlgo() { //custom
+    const algoData = { user_id: this.props.user_profile.user_id, algo_name: this.state.algoName, algo: this.state.algo}
+    addAlgo(algoData)
+      .then((data) => {
+        console.log(data)
+        if (data == true) {
+          getUserAlgos(this.props.user_profile.user_id)
+            .then((algos) => {
+              console.log(algos)
+              this.props.saveUserAlgos(algos)
+            })
+        }
+        else {
+          message.error('Algo name already exists')
+        }
+      })
+  }
+
+  onSubmit() {
+    if (this.state.rebType == 'coin') {
+      const selectedCoins =this.state.arrayCoin.filter((obj) => this.props.top_ranks.slice(this.state.slide[0] - 1, this.state.slide[1]).map((coin) => {return coin[1]}).includes(obj.symbol))
+      console.log(selectedCoins)
+      let total = 0
+      selectedCoins.forEach((pair) => total += pair.value)
+      if (this.state.algoName == '') {
+        message.warning('Name is required')
+      }
+      else if (!(this.state.days > 0) && !(this.state.days <= 365)){
+        message.warning('Days between rebalancing is required! (0-365)')
+      }
+      else if (total !== 100) {
+        message.warning('Total % must add up to 100')
+      }
+      else {
+        console.log(selectedCoins.map((item) => [item.symbol, item.value]))
+        console.log(this.state.algoName)
+        console.log(this.state.days)
+        console.log(this.props.user_profile.user_id)
+        const algoType = { type: this.state.type, reb_type: this.state.rebType}
+        const algoData = {
+          public: this.state.public,
+          user_id: this.props.user_profile.user_id,
+          algo_name: this.state.algoName,
+          algo_type: algoType,
+          algo: selectedCoins.map((item) =>  {return { symbol: item.symbol, value: item.value}}).filter((algo) => algo.value !== 0)
+        }
+        addAlgo(algoData)
+          .then((data) => {
+            console.log(data)
+            if (data == true) {
+              getUserAlgos(this.props.user_profile.user_id)
+                .then((algos) => {
+                  console.log(algos)
+                  this.props.saveUserAlgos(algos)
+                })
+              getAllAlgos()
+                .then((algoData) => {
+                  this.props.saveAllAlgos(algoData)
+                })
+            }
+            else {
+              message.error('Algo name already exists')
+            }
+          })
+      }
+    }
+    else if (this.state.rebType == 'rank') {
+
+      const selectedCoins = this.state.arrayRank.filter((obj) => ranked.slice(this.state.slide[0] - 1, this.state.slide[1]).map((coin) => {return coin[1]}).includes(obj.symbol))
+      console.log(selectedCoins)
+      let total = 0
+      selectedCoins.forEach((pair) => total += pair.value)
+      if (this.state.algoName == '') {
+        message.warning('Name is required')
+      }
+      else if (!(this.state.days > 0) && !(this.state.days <= 365)){
+        message.warning('Days between rebalancing is required! (0-365)')
+      }
+      else if (total !== 100) {
+        message.warning('Total % must add up to 100')
+      }
+      else {
+        console.log(selectedCoins.map((item) => [item.symbol, item.value]))
+        console.log(selectedCoins)
+        console.log(this.state.algoName)
+        console.log(this.state.days)
+        console.log(this.props.user_profile.user_id)
+        const algoType = { type: this.state.type, reb_type: this.state.rebType, reb_day: this.state.days}
+        const algoData = {
+          public: this.state.public,
+          user_id: this.props.user_profile.user_id,
+          algo_name: this.state.algoName,
+          algo_type: algoType,
+          algo: selectedCoins.map((item) =>  {return { symbol: item.symbol, value: item.value}}).filter((algo) => algo.value !== 0)
+        }
+        console.log(algoData)
+        addAlgo(algoData)
+          .then((data) => {
+            console.log(data)
+            if (data == true) {
+              getUserAlgos(this.props.user_profile.user_id)
+                .then((algos) => {
+                  console.log(algos)
+                  this.props.saveUserAlgos(algos)
+                })
+              getAllAlgos()
+                .then((algoData) => {
+                  this.props.saveAllAlgos(algoData)
+                })
+            }
+            else {
+              message.error('Algo name already exists')
+            }
+          })
+      }
+    }
+  }
 
   renderAlgo() {
     return (
@@ -254,6 +714,11 @@ class StrategyPage extends Component {
         {
           this.renderHeader()
         }
+        <Divider>Create New Strategy</Divider>
+				{
+					this.renderAlgoInputs()
+				}
+        <Divider>Discover Strategies</Divider>
 				{
 					this.renderAlgoTabs()
 				}
@@ -284,6 +749,7 @@ StrategyPage.propTypes = {
 	loading_complete: PropTypes.bool.isRequired,
   saveUserAlgos: PropTypes.func.isRequired,
 	saveUserFollows: PropTypes.func.isRequired,
+  saveAllAlgos: PropTypes.func.isRequired,
 }
 
 // for all optional props, define a default value
@@ -302,6 +768,7 @@ const mapReduxToProps = (redux) => {
     user_algos: redux.algos.user_algos,
 		all_algos: redux.algos.all_algos,
 		user_follows: redux.algos.user_follows,
+    top_ranks: redux.cmc.top_ranks,
 	}
 }
 
@@ -310,6 +777,7 @@ export default withRouter(
 	connect(mapReduxToProps, {
     saveUserAlgos,
 		saveUserFollows,
+    saveAllAlgos,
 	})(RadiumHOC)
 )
 

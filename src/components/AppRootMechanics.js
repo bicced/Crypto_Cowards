@@ -26,7 +26,8 @@ import {
 } from '../api/general/general_api'
 import {
 	getUserProfile,
-	checkAccountRole
+	checkAccountRole,
+	userApiExists,
 } from '../api/auth/auth_api'
 import {
 	getUserAlgos,
@@ -101,7 +102,11 @@ export default (ComposedComponent) => {
 							console.log(selected)
 							this.props.saveUserSelected(selected)
 						})
-					checkAccountRole(data.profile.user_id)
+					userApiExists(data.profile.user_id)
+						.then((exists) => {
+							data.profile.api_exists = exists
+							return checkAccountRole(data.profile.user_id)
+						})
 						.then((role) => {
 							console.log(role.rows)
 							if (role.rows.length == 0){
