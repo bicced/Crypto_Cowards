@@ -10,7 +10,7 @@ import QueueAnim from 'rc-queue-anim'
 import Rx from 'rxjs'
 import { withRouter } from 'react-router-dom'
 import { saveBinance } from '../../api/binance/save_binance'
-import { getUserProfile } from '../../api/auth/auth_api'
+import { getUserProfile, removeUserApi } from '../../api/auth/auth_api'
 import { addCoward, addPro } from '../../api/users/add_role'
 import { saveUserProfileToRedux } from '../../actions/auth/auth_actions'
 import {
@@ -76,7 +76,7 @@ class SettingsPage extends Component {
 		saveBinance({API_KEY: this.state.apiKey, API_SECRET: this.state.apiSecret, user_id: this.props.user_profile.user_id})
 			.then((data) => {
 				message.success('Successfully updated API keys')
-
+				this.props.saveUserProfileToRedux({ user_id: this.props.user_profile.user_id, first_name: this.props.user_profile.first_name, last_name: this.props.user_profile.last_name, email: this.props.user_profile.email, api_exists: true})
 			})
 			.catch((err) => {
 				message.error('Invalid API keys')
@@ -93,37 +93,47 @@ class SettingsPage extends Component {
 	}
 
 	renderUserProfilePreview() {
+
 		return (
       <div style={{ margin: '10px 10px 0px 10px' }}>
         <div style={comStyles().rowContainer}>
           <h2 style={{ margin: 0 }}>{`${this.props.user_profile.first_name} ${this.props.user_profile.last_name}`}</h2>
-          <Button type='primary' ghost onClick={() => this.props.history.push(`/app/settings/${this.props.user_profile.user_id}/user/edit`)}>
-            EDIT
-          </Button>
         </div>
         <br />
         <div>
           <p>{`Email: ${this.props.user_profile.email}`}</p>
-					<p>{`Account Type: ${this.props.user_profile.phone}`}</p>
+					<p>{`Account Type: `}{this.props.user_profile.pro_id ? 'Pro' : 'Free'}</p>
         </div>
       </div>
     )
 	}
 
+	removeApi() {
+		removeUserApi(this.props.user_profile.user_id)
+			.then((data) => {
+				message.success('Removed Existing Api Keys')
+				this.props.saveUserProfileToRedux({ user_id: this.props.user_profile.user_id, first_name: this.props.user_profile.first_name, last_name: this.props.user_profile.last_name, email: this.props.user_profile.email, api_exists: false})
+			})
+			.catch((err) => {
+				console.log(err)
+				message.error('Error Occured')
+			})
+	}
+
 	renderApiStatus() {    //change to api status
-		if (this.props.user_profile.email && this.props.user_profile.phone) {
+		if (this.props.user_profile.api_exists) {
 			return (
 				<div>
 					<div style={comStyles().rowContainer}>
 						<h2 style={{ margin: 0 }}>API Keys</h2>
-						<Button type='primary' ghost onClick={() => this.props.history.push(`/app/settings/${this.props.user_profile.user_id}/user/edit`)}>
-							EDIT
+						<Button type='primary' ghost onClick={() => this.removeApi()}>
+							Reset Keys
 						</Button>
 					</div>
 					<br />
 					<div>
-						<p>{`API Key: ${this.props.user_profile.email}`}</p>
-						<p>{`API Secret: ${this.props.user_profile.phone}`}</p>
+						<p>{`API Key: `}<Icon style={{color: '#fe8c00'}} type="check"/></p>
+						<p>{`API Secret: `}<Icon style={{color: '#fe8c00'}} type="check"/></p>
 					</div>
 				</div>
 			)
@@ -168,54 +178,7 @@ class SettingsPage extends Component {
 	}
 
 	renderAccountRole() {
-		// if (this.state.user_profile.coward_id) {
-		// 	return (
-		// 		<div>
-		// 			<div style={comStyles().rowContainer}>
-		// 				<h2 style={{ margin: 0,}}>Account Type</h2>
-		// 				<Button type='primary' ghost >
-		// 					EDIT
-		// 				</Button>
-		// 			</div>
-		// 			<br />
-		// 			<div>
-		// 				<Button type='primary' disabled='true' onClick={() => this.addCowardButton()}>Coward</Button>
-		// 				<Button onClick={() => this.addProButton()}>Pro</Button>
-		// 			</div>
-		// 		</div>
-		// 	)
-		// }
-		// else if (this.state.user_profile.pro_id) {
-		// 	return (
-		// 		<div>
-		// 			<div style={comStyles().rowContainer}>
-		// 				<h2 style={{ margin: 0, }}>Account Type</h2>
-		// 				<Button type='primary' ghost>
-		// 					EDIT
-		// 				</Button>
-		// 			</div>
-		// 			<br />
-		// 			<div>
-		// 				<Button onClick={() => this.addCowardButton()}>Coward</Button>
-		// 				<Button type='primary' disabled='true' onClick={() => this.addProButton()}>Pro</Button>
-		// 			</div>
-		// 		</div>
-		// 	)
-		// }
-		// else {
-		// 	return (
-		// 		<div>
-		// 			<div style={comStyles().rowContainer}>
-		// 				<h2 style={{ margin: 0, color: 'red'}}>Account Type (Required)</h2>
-		// 			</div>
-		// 			<br />
-		// 			<div>
-		// 				<Button onClick={() => this.addCowardButton()}>Coward</Button>
-		// 				<Button onClick={() => this.addProButton()}>Pro</Button>
-		// 			</div>
-		// 		</div>
-		// 	)
-		// }
+
 		const makeSelection = (selection) => {
 			this.setState({
 				selection,
@@ -242,40 +205,6 @@ class SettingsPage extends Component {
       </div>
     )
 	}
-
-
-	// renderUsersPreview() {
-	// 	return (
-	// 		<div style={{ margin: '10px 10px 0px 10px' }}>
-  //       <div style={comStyles().rowContainer}>
-  //         <h2 style={{ margin: 0 }}>{`${this.props.users.length} User`}</h2>
-  //       </div>
-  //       <br />
-  //       <div>
-  //         <List
-	// 					itemLayout='horizontal'
-	// 					dataSource={this.props.users}
-	// 					renderItem={item => {
-	// 						return (
-	// 							<List.Item>
-	// 								<List.Item.Meta
-	// 									avatar={<Avatar style={{ backgroundColor: '#2faded', verticalAlign: 'middle' }}>{item.first_name[0]}</Avatar>}
-	// 									title={`${item.first_name} ${item.last_name}`}
-	// 									description={
-	// 										<div>
-	// 											<p>{`Email: ${item.email}`}</p>
-	// 											<p>{`Phone: ${item.phone}`}</p>
-	// 										</div>
-	// 									}
-	// 								/>
-	// 							</List.Item>
-	// 						)
-	// 					}}
-	// 				/>
-  //       </div>
-  //     </div>
-	// 	)
-	// }
 
 	renderSettings() {
 		return (

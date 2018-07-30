@@ -30,6 +30,34 @@ export const getUserProfile = (user_id, profile) => {
   return p
 }
 
+export const userApiExists = (user_id) => {
+  const p = new Promise((res, rej) => {
+    axios.post(`${ACCOUNTS_MICROSERVICE}/user_api_exists`, { user_id }, authHeaders())
+      .then((data) => {
+        // once we have the response, only then do we dispatch an action to Redux
+        res(data.data.api_exists)
+      })
+      .catch((err) => {
+        rej(err)
+      })
+  })
+  return p
+}
+
+export const removeUserApi = (user_id) => {
+  const p = new Promise((res, rej) => {
+    axios.post(`${ACCOUNTS_MICROSERVICE}/remove_user_api`, { user_id }, authHeaders())
+      .then((data) => {
+        // once we have the response, only then do we dispatch an action to Redux
+        res(data.data.message)
+      })
+      .catch((err) => {
+        rej(err)
+      })
+  })
+  return p
+}
+
 export const addCoward = (user_id) => {
   const p = new Promise((res, rej) => {
     axios.post(`${ACCOUNTS_MICROSERVICE}/add_coward`, { user_id }, authHeaders())

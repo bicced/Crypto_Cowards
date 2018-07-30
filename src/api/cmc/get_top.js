@@ -10,7 +10,7 @@ export const getTopRanks = () => {
       `https://api.coinmarketcap.com/v2/ticker/?limit=100&sort=rank`,
     ).then((data) => {
       console.log(data)
-      const toArray = Object.keys(data.data.data).map(i => { return [data.data.data[i].rank, data.data.data[i].symbol] }).sort((a,b) => a[0] - b[0])
+      const toArray = Object.keys(data.data.data).map(i => { return [data.data.data[i].rank, data.data.data[i].symbol, data.data.data[i].quotes.USD.percent_change_1h, data.data.data[i].quotes.USD.percent_change_24h, data.data.data[i].quotes.USD.percent_change_7d] }).sort((a,b) => a[0] - b[0])
       res(toArray)
     }).catch((err) => {
       console.log(err.response.data)

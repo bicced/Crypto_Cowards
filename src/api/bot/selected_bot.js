@@ -3,7 +3,24 @@ import authHeaders from '../authHeaders'
 const axios = require('axios')
 // import { authHeaders } from './authHeaders'
 
+export const deleteUserBot = (user_id) => {
+  console.log('hit api call')
+  const p = new Promise((res, rej) => {
+    axios.post(
+      `${ACCOUNTS_MICROSERVICE}/delete_user_bot`,
+      {user_id},
+      authHeaders()
+    ).then((data) => {
+      console.log(data)
+      res(data.data)
+    }).catch((err) => {
+      console.log(err.response.data)
+      rej(err)
+    })
 
+  })
+  return p
+}
 
 export const saveBot = (params) => {
   console.log('hit api call')
@@ -69,6 +86,25 @@ export const deactivateBot = (user_info) => {
     axios.post(
       `${ACCOUNTS_MICROSERVICE}/deactivate_bot`,
       user_info,
+      authHeaders()
+    ).then((data) => {
+      console.log(data)
+      res(data.data)
+    }).catch((err) => {
+      console.log(err.response.data)
+      rej(err)
+    })
+
+  })
+  return p
+}
+
+export const getRebalanceTime = (user_id) => {
+  console.log('hit api call')
+  const p = new Promise((res, rej) => {
+    axios.post(
+      `${ACCOUNTS_MICROSERVICE}/get_rebalance_time`,
+      {user_id},
       authHeaders()
     ).then((data) => {
       console.log(data)

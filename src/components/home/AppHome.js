@@ -1,6 +1,6 @@
 // Compt for copying as a template
 // This compt is used for...
-
+import humanizeDuration from 'humanize-duration'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import Radium from 'radium'
@@ -15,35 +15,68 @@ import NumberInfo from 'ant-design-pro/lib/NumberInfo'
 import numeral from 'numeral'
 import Binance from 'node-binance-api'
 import { getCandlesticks, getBalance } from '../../api/binance/save_binance'
+import { getRebalanceTime } from '../../api/bot/selected_bot'
 import 'antd/dist/antd.css'
 import 'ant-design-pro/dist/ant-design-pro.css'
 import CountDown from 'ant-design-pro/lib/CountDown'
+import { changeSelectedTab } from '../../actions/app/app_actions'
 import {
 	Card, Row, Col, Icon, Tooltip, Divider, Menu, Dropdown, Button
 } from 'antd'
- //
-//import Binance from 'node-binance-api'
 
-// Intervals: 1m,3m,5m,15m,30m,1h,2h,4h,6h,8h,12h,1d,3d,1w,1M
+const shortEnglishHumanizer = humanizeDuration.humanizer({
+  language: 'shortEn',
+  languages: {
+    shortEn: {
+      y: () => 'y',
+      mo: () => 'mo',
+      w: () => 'w',
+      d: () => 'Days',
+      h: () => 'Hours',
+      m: () => 'Mins',
+      s: () => 's',
+      ms: () => 'ms',
+    }
+  }
+})
 
-
-
-
-
-const chartData = []
-for (let i = 0; i < 20; i += 1) {
-  chartData.push({
-    x: (new Date().getTime()) + (1000 * 60 * 30 * i),
-    y1: Math.floor(Math.random() * 100) + 1000,
-    y2: Math.floor(Math.random() * 100) + 10,
-  })
-}
-
-
-
-const targetTime = new Date().getTime() + 39000000
-
-
+const ticker = (
+	<Menu>
+		<Menu.Item><a onClick={() => this.changeGraphState(0,'BTCUSDT')}>BTC/USDT</a></Menu.Item>
+		<Menu.Item><a onClick={() => this.changeGraphState(0,'EOSBTC')}>EOS/BTC</a></Menu.Item>
+		<Menu.Item><a onClick={() => this.changeGraphState(0,'ETHBTC')}>ETH/BTC</a></Menu.Item>
+		<Menu.Item><a onClick={() => this.changeGraphState(0,'TRXBTC')}>TRX/BTC</a></Menu.Item>
+		<Menu.Item><a onClick={() => this.changeGraphState(0,'ETCBTC')}>ETC/BTC</a></Menu.Item>
+		<Menu.Item><a onClick={() => this.changeGraphState(0,'VENBTC')}>VEN/BTC</a></Menu.Item>
+		<Menu.Item><a onClick={() => this.changeGraphState(0,'ADABTC')}>ADA/BTC</a></Menu.Item>
+		<Menu.Item><a onClick={() => this.changeGraphState(0,'ICXBTC')}>ICX/BTC</a></Menu.Item>
+		<Menu.Item><a onClick={() => this.changeGraphState(0,'XRPBTC')}>XRP/BTC</a></Menu.Item>
+		<Menu.Item><a onClick={() => this.changeGraphState(0,'XLMBTC')}>XLM/BTC</a></Menu.Item>
+		<Menu.Item><a onClick={() => this.changeGraphState(0,'ZRXBTC')}>ZRX/BTC</a></Menu.Item>
+		<Menu.Item><a onClick={() => this.changeGraphState(0,'LTCBTC')}>LTC/BTC</a></Menu.Item>
+		<Menu.Item><a onClick={() => this.changeGraphState(0,'ARNBTC')}>ARN/BTC</a></Menu.Item>
+		<Menu.Item><a onClick={() => this.changeGraphState(0,'NEOBTC')}>NEO/BTC</a></Menu.Item>
+	</Menu>
+)
+const timeframe = (
+	<Menu >
+		<Menu.Item><a onClick={() => this.changeGraphState(1,'1m')}>1m</a></Menu.Item>
+		<Menu.Item><a onClick={() => this.changeGraphState(1,'3m')}>3m</a></Menu.Item>
+		<Menu.Item><a onClick={() => this.changeGraphState(1,'5m')}>5m</a></Menu.Item>
+		<Menu.Item><a onClick={() => this.changeGraphState(1,'15m')}>15m</a></Menu.Item>
+		<Menu.Item><a onClick={() => this.changeGraphState(1,'30m')}>30m</a></Menu.Item>
+		<Menu.Item><a onClick={() => this.changeGraphState(1,'1h')}>1h</a></Menu.Item>
+		<Menu.Item><a onClick={() => this.changeGraphState(1,'2h')}>2h</a></Menu.Item>
+		<Menu.Item><a onClick={() => this.changeGraphState(1,'4h')}>4h</a></Menu.Item>
+		<Menu.Item><a onClick={() => this.changeGraphState(1,'6h')}>6h</a></Menu.Item>
+		<Menu.Item><a onClick={() => this.changeGraphState(1,'8h')}>8h</a></Menu.Item>
+		<Menu.Item><a onClick={() => this.changeGraphState(1,'12h')}>12h</a></Menu.Item>
+		<Menu.Item><a onClick={() => this.changeGraphState(1,'1d')}>1d</a></Menu.Item>
+		<Menu.Item><a onClick={() => this.changeGraphState(1,'3d')}>3d</a></Menu.Item>
+		<Menu.Item><a onClick={() => this.changeGraphState(1,'1w')}>1w</a></Menu.Item>
+		<Menu.Item><a onClick={() => this.changeGraphState(1,'1M')}>1M</a></Menu.Item>
+	</Menu>
+)
 
 class AppHome extends Component {
 
@@ -52,64 +85,84 @@ class AppHome extends Component {
 		this.state = {
 			visitData: [],
 			ticker: 'BTCUSDT',
+			targetTime: null,
+			targetPercent: 100,
 			timeframe: '1d',
-			salesPieData: [ { x: 'A', y: 4544 }, { x: 'B', y: 3321 }, { x: 'C', y: 3113, }, { x: 'D', y: 4544 }, { x: 'E', y: 3321 }, { x: 'F', y: 3113, }]
+			salesPieData: [ { x: 'BTC', y: 500 }, { x: 'ETH', y: 400 }, { x: 'BNB', y: 300, }, { x: 'EOS', y: 300 }, { x: 'LTC', y: 200 }, { x: 'XRP', y: 100, }]
 		}
 	}
 
 	componentWillMount() {
 		this.grabGraphs()
+		getRebalanceTime(this.props.user_profile.user_id)
+			.then((data) => {
+				console.log(data)
+				this.setState({targetTime: moment().add(data.dateis, 'minutes'), targetPercent: data.percent})
+			})
+		if (this.props.user_profile.api_exists) {
+			getBalance(this.props.user_profile.user_id)
+				.then((data) => {
+					console.log(data)
+					const mapBalance = data.map((coin) => {return { x: coin[0], y: coin[1]}}).sort((a,b) => {return b.y - a.y})
+					this.setState({
+						salesPieData: mapBalance
+					})
+				})
+		}
 
 	}
 
 	renderCardRow() {
 		return (
-			<div style={comStyles().topCards}>
-				<ChartCard style={{width: '50%'}} title="Next Rebalancing">
-					<div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-around'}}>
-						<CountDown style={{ fontSize: 30, marginTop: '10%' }} target={targetTime} />
+			<div style={screen.width >= 550 ? comStyles().topCards : comStyles().topCardz}>
+				<ChartCard style={{width: '100%'}} title="Next Rebalancing">
+					<div style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-around'}}>
+						{
+							this.state.targetTime
+							?
+							<CountDown
+								style={{ fontSize: '150%', marginTop: '10%' }}
+								format={(time) =>  shortEnglishHumanizer(time, { units: ['d', 'h', 'm'], round: true})}
+								target={this.state.targetTime}
+							/>
+							:
+							<div style={{ fontSize: '150%', marginTop: '10%' }} onClick={() => this.props.changeSelectedTab('bot')}>No active strategies</div>
+						}
 						<WaterWave
-							height={200}
+							height={220}
 							title="Time left"
-							percent={30}
+							percent={this.state.targetPercent}
 							color='#FFA500'
 						/>
 					</div>
 				</ChartCard>
 
 				<ChartCard
+					style={{width: '100%'}}
 					title="Portfolio"
-					style={{width: '50%'}}
 				>
-					<Pie
-						hasLegend
-						title="Allocations"
-						subTitle="Allocations"
-						total={() => (
-							<span
-								dangerouslySetInnerHTML={{
-									__html: '$' + this.state.salesPieData.reduce((pre, now) => now.y + pre, 0).toFixed(2)
-								}}
-							/>
-						)}
-						data={this.state.salesPieData}
-						valueFormat={val => <span dangerouslySetInnerHTML={{ __html: '$' + val.toFixed(2) }} />}
-						height={200}
-					/>
+					<div>
+						<Pie
+							hasLegend
+							title="Allocations"
+							subTitle="Allocations"
+							total={() => (
+								<div>
+									{'$' + this.state.salesPieData.reduce((pre, now) => now.y + pre, 0).toFixed(2)}
+								</div>
+							)}
+							data={this.state.salesPieData}
+							valueFormat={val => <div>{'$' + val.toFixed(2)}</div> }
+							height={240}
+						/>
+					</div>
 				</ChartCard>
 			</div>
 		)
 	}
 
-	testButton() {
-		getBalance(this.props.user_profile.user_id)
-			.then((data) => {
-				console.log(data)
-				const mapBalance = data.map((coin) => {return { x: coin[0], y: coin[1]}})
-				this.setState({
-					salesPieData: mapBalance
-				})
-			})
+	linkApiButton() {
+
 	}
 
 	grabGraphs() {
@@ -148,43 +201,7 @@ class AppHome extends Component {
 	}
 
 	renderCardBelow() {
-		const ticker = (
-		  <Menu>
-		    <Menu.Item><a onClick={() => this.changeGraphState(0,'BTCUSDT')}>BTC/USDT</a></Menu.Item>
-		    <Menu.Item><a onClick={() => this.changeGraphState(0,'EOSBTC')}>EOS/BTC</a></Menu.Item>
-				<Menu.Item><a onClick={() => this.changeGraphState(0,'ETHBTC')}>ETH/BTC</a></Menu.Item>
-				<Menu.Item><a onClick={() => this.changeGraphState(0,'TRXBTC')}>TRX/BTC</a></Menu.Item>
-				<Menu.Item><a onClick={() => this.changeGraphState(0,'ETCBTC')}>ETC/BTC</a></Menu.Item>
-				<Menu.Item><a onClick={() => this.changeGraphState(0,'VENBTC')}>VEN/BTC</a></Menu.Item>
-				<Menu.Item><a onClick={() => this.changeGraphState(0,'ADABTC')}>ADA/BTC</a></Menu.Item>
-				<Menu.Item><a onClick={() => this.changeGraphState(0,'ICXBTC')}>ICX/BTC</a></Menu.Item>
-				<Menu.Item><a onClick={() => this.changeGraphState(0,'XRPBTC')}>XRP/BTC</a></Menu.Item>
-				<Menu.Item><a onClick={() => this.changeGraphState(0,'XLMBTC')}>XLM/BTC</a></Menu.Item>
-				<Menu.Item><a onClick={() => this.changeGraphState(0,'ZRXBTC')}>ZRX/BTC</a></Menu.Item>
-				<Menu.Item><a onClick={() => this.changeGraphState(0,'LTCBTC')}>LTC/BTC</a></Menu.Item>
-				<Menu.Item><a onClick={() => this.changeGraphState(0,'ARNBTC')}>ARN/BTC</a></Menu.Item>
-				<Menu.Item><a onClick={() => this.changeGraphState(0,'NEOBTC')}>NEO/BTC</a></Menu.Item>
-		  </Menu>
-		)
-		const timeframe = (
-		  <Menu >
-				<Menu.Item><a onClick={() => this.changeGraphState(1,'1m')}>1m</a></Menu.Item>
-				<Menu.Item><a onClick={() => this.changeGraphState(1,'3m')}>3m</a></Menu.Item>
-				<Menu.Item><a onClick={() => this.changeGraphState(1,'5m')}>5m</a></Menu.Item>
-				<Menu.Item><a onClick={() => this.changeGraphState(1,'15m')}>15m</a></Menu.Item>
-				<Menu.Item><a onClick={() => this.changeGraphState(1,'30m')}>30m</a></Menu.Item>
-				<Menu.Item><a onClick={() => this.changeGraphState(1,'1h')}>1h</a></Menu.Item>
-				<Menu.Item><a onClick={() => this.changeGraphState(1,'2h')}>2h</a></Menu.Item>
-				<Menu.Item><a onClick={() => this.changeGraphState(1,'4h')}>4h</a></Menu.Item>
-				<Menu.Item><a onClick={() => this.changeGraphState(1,'6h')}>6h</a></Menu.Item>
-				<Menu.Item><a onClick={() => this.changeGraphState(1,'8h')}>8h</a></Menu.Item>
-		    <Menu.Item><a onClick={() => this.changeGraphState(1,'12h')}>12h</a></Menu.Item>
-		    <Menu.Item><a onClick={() => this.changeGraphState(1,'1d')}>1d</a></Menu.Item>
-				<Menu.Item><a onClick={() => this.changeGraphState(1,'3d')}>3d</a></Menu.Item>
-		    <Menu.Item><a onClick={() => this.changeGraphState(1,'1w')}>1w</a></Menu.Item>
-		    <Menu.Item><a onClick={() => this.changeGraphState(1,'1M')}>1M</a></Menu.Item>
-		  </Menu>
-		)
+
 		return (
 			<div style={{marginTop: '1%'}}>
 				<ChartCard title="Price history">
@@ -199,9 +216,6 @@ class AppHome extends Component {
 								</Dropdown>
 							</div>
 						}
-						total={numeral(12321).format('0,0')}
-						status="up"
-						subTotal={17.1}
 					/>
 					<MiniArea
 						 line
@@ -237,7 +251,13 @@ class AppHome extends Component {
 					{
 						this.renderUserHeader()
 					}
-					<Button onClick={() => this.testButton()}>Test button</Button>
+					{
+						this.props.user_profile.api_exists
+						?
+						null
+						:
+						<Button type='primary' onClick={() => this.linkApiButton()}>Activate Account</Button>
+					}
 					{
 						this.renderCardRow()
 					}
@@ -271,6 +291,7 @@ AppHome.propTypes = {
 	history: PropTypes.object.isRequired,
 	user_profile: PropTypes.object.isRequired,
 	loading_complete: PropTypes.bool.isRequired,
+	changeSelectedTab: PropTypes.func.isRequired,
 }
 
 // for all optional props, define a default value
@@ -292,7 +313,7 @@ const mapReduxToProps = (redux) => {
 // Connect together the Redux store with this React component
 export default withRouter(
 	connect(mapReduxToProps, {
-
+		changeSelectedTab,
 	})(RadiumHOC)
 )
 
@@ -310,8 +331,14 @@ const comStyles = () => {
 		topCards: {
 			display: 'flex',
 			flexDirection: 'row',
-			justifyContent: 'space-between',
+			width: '100%',
 			marginTop: '2%'
-		}
+		},
+		topCardz: {
+			display: 'flex',
+			flexDirection: 'column',
+			width: '100%',
+			marginTop: '2%'
+		},
 	}
 }

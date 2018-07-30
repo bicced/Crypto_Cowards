@@ -8,169 +8,26 @@ import PropTypes from 'prop-types'
 import Rx from 'rxjs'
 import { withRouter } from 'react-router-dom'
 import QueueAnim from 'rc-queue-anim'
-import { addAlgo, getUserAlgos, getAllAlgos } from '../../api/algo/user_algos'
-import { saveUserAlgos, saveUserSelected, saveAllAlgos } from '../../actions/algo/algo_actions'
+import { saveUserSelected, saveUserFollows} from '../../actions/algo/algo_actions'
 import { checkRebalancing } from '../../api/test/test'
 import {
-  List, Avatar, Button, Spin, Input, Card, Divider, Icon, message, Radio, Slider, Popover
+  List, Avatar, Button, Spin, Card, Divider, Icon, message, Popover
 } from 'antd'
 import {
 	WhiteSpace
 } from 'antd-mobile'
-import { saveBot, getBot, activateBot, deactivateBot } from '../../api/bot/selected_bot'
-const { TextArea } = Input
+import { saveBot, getBot, activateBot, deactivateBot, deleteUserBot } from '../../api/bot/selected_bot'
+import { getUserFollows, deleteFollows} from '../../api/algo/user_algos'
+import Texty from 'rc-texty'
+import 'rc-texty/assets/index.css'
 
-const binanceSymbols = ['BTC', 'ADA', 'ADX', 'AE', 'AGI', 'AION', 'AMB', 'APPC', 'ARK', 'ARN', 'AST', 'BAT',
-                  'BCC', 'BCD', 'BCN', 'BCPT', 'BLZ', 'BNB', 'BNT', 'BQX', 'BRD', 'BTG', 'BTS', 'CDT',
-                  'CHAT', 'CLOAK', 'CMT', 'CND', 'CVC', 'DASH', 'DATA', 'DENT', 'ARDR', 'DGD', 'DLT', 'DNT', 'EDO', 'ELF',
-                  'ENG', 'ENJ', 'EOS', 'ETC', 'ETH', 'EVX', 'FUEL', 'FUN', 'GAS', 'GNT', 'GRS', 'GTO', 'GVT', 'GXS', 'HSR', 'ICN', 'ICX', 'INS',
-                  'IOST', 'IOTA', 'IOTX', 'KEY', 'KMD', 'KNC', 'LEND', 'LINK', 'LOOM', 'LRC', 'LSK', 'LTC', 'LUN', 'MANA', 'MCO', 'MDA', 'MFT',
-                  'MOD', 'MTH', 'MTL', 'NANO', 'NAS', 'NAV', 'NCASH', 'NEBL', 'NEO', 'NPXS', 'NULS', 'NXS', 'OAX', 'OMG', 'ONT', 'OST', 'PIVX',
-                  'POA', 'POE', 'POWR', 'PPT', 'QKC', 'QLC', 'QSP', 'QTUM', 'RCN', 'REP', 'REQ', 'RLC', 'RPX', 'SALT', 'SC', 'SKY', 'SNGLS', 'SNM',
-                  'SNT', 'STEEM', 'STORJ', 'STORM', 'STRAT', 'SUB', 'SYS', 'THETA', 'TNB', 'TNT', 'TRIG', 'TRX', 'TUSD', 'VEN', 'VIA', 'VIB', 'VIBE',
-                  'WABI', 'WAN', 'WAVES', 'WINGS', 'WPR', 'WTC', 'XEM', 'XLM', 'XMR', 'XRP', 'XVG', 'XZC', 'YOYO', 'ZEC', 'ZEN', 'ZIL', 'ZRX']
-
-const binanceRanks = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19',
-                        '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31', '32', '33', '34', '35', '36', '37', '38',
-                          '39', '40', '41', '42', '43', '44', '45', '46', '47', '48', '49', '50']
 
 class BotPage extends Component {
 
   constructor() {
     super()
     this.state = {
-      algo: '',
-      algoName: '',
-      type: '',
-      slide: [1, 3],
-      list: [],
-      arrayCoin: [],
-      arrayRank: [],
-      days: 0,
-      total: 0,
-      rebType: '',
       activatedButton: false,
-    }
-  }
-
-  componentWillMount() {
-    this.setState({
-      arrayCoin: binanceSymbols.map((coin) => { return {symbol: coin, value: 0}}),
-      arrayRank: binanceRanks.map((coin) => { return {symbol: coin, value: 0}})
-    })
-
-  }
-
-  submitAlgo() { //custom
-    const algoData = { user_id: this.props.user_profile.user_id, algo_name: this.state.algoName, algo: this.state.algo}
-    addAlgo(algoData)
-      .then((data) => {
-        console.log(data)
-        if (data == true) {
-          getUserAlgos(this.props.user_profile.user_id)
-            .then((algos) => {
-              console.log(algos)
-              this.props.saveUserAlgos(algos)
-            })
-        }
-        else {
-          message.error('Algo name already exists')
-        }
-      })
-  }
-
-  renderInputType() {
-    if (this.state.type == 'Rebalance') {
-      return (
-        <div>
-          <Input placeholder='Name of Algo' onChange={(e) => this.setState({ algoName: e.target.value})} />
-          <WhiteSpace/>
-          {
-            this.renderRankingType()
-          }
-          <WhiteSpace/>
-          {
-            this.renderCoinOrRank()
-          }
-        </div>
-      )
-    }
-    else if (this.state.type == 'Custom'){
-      return (
-        <div>
-          <Input placeholder='Name of Algo' onChange={(e) => this.setState({ algoName: e.target.value})} />
-          <WhiteSpace/>
-          <TextArea placeholder='Algorithm code' onChange={(e) => this.setState({ algo: e.target.value})} rows={4} />
-          <WhiteSpace/>
-          <Button type='primary' onClick={() => this.submitAlgo() }>Submit Algo</Button>
-        </div>
-      )
-    }
-    else {
-      return (null)
-    }
-  }
-
-  renderAlgoInputs() {
-    return (
-      <div>
-        <Radio.Group type='primary' value={this.state.selection} onChange={e => this.setState({ type: e.target.value})}>
-          <Popover content={<p>Select a range from top 1-50 Binance coins by Marketcap. <br/> Rebalance portfolio and choose time interval between next and subsequent rebalances</p>} title="Rebalancing">
-  				    <Radio.Button value='Rebalance'>Rebalance</Radio.Button>
-          </Popover>
-          <Popover content={<p>Create your own algorithms to trade with</p>} title="Custom Algorithms">
-  				    <Radio.Button disabled value='Custom'>Custom</Radio.Button>
-          </Popover>
-  			</Radio.Group>
-        <WhiteSpace />
-        {
-          this.renderInputType()
-        }
-      </div>
-    )
-  }
-
-  renderCoinOrRank() {
-    if (this.state.rebType == 'coin') {
-      return (
-        <div>
-          <Slider range step={1} max={50} min={1} defaultValue={this.state.slide} onChange={(e) => this.setState({ slide: e})} onAfterChange={(e) => this.setState({ slide: e}, console.log(this.state.slide))} />
-          <WhiteSpace/>
-          {
-            this.outOfHundred()
-          }
-          <WhiteSpace/>
-          {
-            this.renderCoins()
-          }
-          <WhiteSpace/>
-          <Button type='primary' onClick={() => this.onSubmit()}>Submit Algo</Button>
-        </div>
-      )
-    }
-    else if (this.state.rebType == 'rank'){
-      return (
-        <div>
-          <Input placeholder='Days between rebalancing (0-365)' onChange={(e) => this.setState({days: parseInt(e.target.value)})} />
-          <WhiteSpace/>
-          <Slider range step={1} max={50} min={1} defaultValue={this.state.slide} onChange={(e) => this.setState({ slide: e})} onAfterChange={(e) => this.setState({ slide: e}, console.log(this.state.slide))} />
-          <WhiteSpace/>
-          {
-            this.outOfHundred()
-          }
-          <WhiteSpace/>
-          {
-            this.renderRanks()
-          }
-          <WhiteSpace/>
-          <Button type='primary' onClick={() => this.onSubmit()}>Submit Algo</Button>
-        </div>
-      )
-    }
-    else {
-      return (
-        null
-      )
     }
   }
 
@@ -186,264 +43,13 @@ class BotPage extends Component {
       })
   }
 
-  outOfHundred() {
-    if (this.state.rebType == 'coin') {
-      const selectedCoins =this.state.arrayCoin.filter((obj) => this.props.top_ranks.slice(this.state.slide[0] - 1, this.state.slide[1]).map((coin) => {return coin[1]}).includes(obj.symbol))
-      console.log(selectedCoins)
-      let total = 0
-      selectedCoins.forEach((pair) => total += pair.value)
-      return (
-        <div style={{ display: 'flex', justifyContent: 'space-around', flexDirection: 'row', fontSize: '150%'}}>
-          <div>Allocations: {total}/100%</div>
-          <div>Rankings by Marketcap: {this.state.slide[0]}-{this.state.slide[1]}</div>
-        </div>
-      )
-    }
-    else if (this.state.rebType == 'rank') {
-      const ranked = [[1, 1], [2, 2], [3, 3], [4, 4], [5, 5], [6, 6], [7, 7], [8, 8], [9, 9], [10, 10], [11, 11],
-                      [12, 12], [13, 13], [14, 14], [15, 15], [16, 16], [17, 17], [18, 18], [19, 19], [20, 20], [21, 21], [22, 22], [23, 23],
-                        [24, 24], [25, 25], [26, 26], [27, 27], [28, 28], [29, 29], [30, 30], [31, 31], [32, 32], [33, 33], [34, 34], [35, 35],
-                          [36, 36], [37, 37], [38, 38], [39, 39], [40, 40], [41, 41], [42, 42], [43, 43], [44, 44], [45, 45], [46, 46], [47, 47],
-                            [48, 48], [49, 49], [50, 50]]
-      const selectedCoins = this.state.arrayRank.filter((obj) => ranked.slice(this.state.slide[0] - 1, this.state.slide[1]).map((coin) => {return coin[1]}).includes(obj.symbol))
-      console.log(selectedCoins)
-      let total = 0
-      selectedCoins.forEach((pair) => total += pair.value)
-      return (
-        <div style={{ display: 'flex', justifyContent: 'space-around', flexDirection: 'row', fontSize: '150%'}}>
-          <div>Allocations: {total}/100%</div>
-          <div>Rankings by Marketcap: {this.state.slide[0]}-{this.state.slide[1]}</div>
-        </div>
-      )
-    }
-
-  }
-
-  onSubmit() {
-    if (this.state.rebType == 'coin') {
-      const selectedCoins =this.state.arrayCoin.filter((obj) => this.props.top_ranks.slice(this.state.slide[0] - 1, this.state.slide[1]).map((coin) => {return coin[1]}).includes(obj.symbol))
-      console.log(selectedCoins)
-      let total = 0
-      selectedCoins.forEach((pair) => total += pair.value)
-      if (this.state.algoName == '') {
-        message.warning('Name is required')
-      }
-      else if (!(this.state.days > 0) && !(this.state.days <= 365)){
-        message.warning('Days between rebalancing is required! (0-365)')
-      }
-      else if (total !== 100) {
-        message.warning('Total % must add up to 100')
-      }
-      else {
-        console.log(selectedCoins.map((item) => [item.symbol, item.value]))
-        console.log(this.state.algoName)
-        console.log(this.state.days)
-        console.log(this.props.user_profile.user_id)
-        const algoType = { type: this.state.type, reb_type: this.state.rebType}
-        const algoData = {
-          user_id: this.props.user_profile.user_id,
-          algo_name: this.state.algoName,
-          algo_type: algoType,
-          algo: selectedCoins.map((item) =>  {return { symbol: item.symbol, value: item.value}})
-        }
-        addAlgo(algoData)
-          .then((data) => {
-            console.log(data)
-            if (data == true) {
-              getUserAlgos(this.props.user_profile.user_id)
-                .then((algos) => {
-                  console.log(algos)
-                  this.props.saveUserAlgos(algos)
-                })
-              getAllAlgos()
-                .then((algoData) => {
-                  this.props.saveAllAlgos(algoData)
-                })
-            }
-            else {
-              message.error('Algo name already exists')
-            }
-          })
-      }
-    }
-    else if (this.state.rebType == 'rank') {
-      const ranked = [[1, 1], [2, 2], [3, 3], [4, 4], [5, 5], [6, 6], [7, 7], [8, 8], [9, 9], [10, 10], [11, 11],
-                      [12, 12], [13, 13], [14, 14], [15, 15], [16, 16], [17, 17], [18, 18], [19, 19], [20, 20], [21, 21], [22, 22], [23, 23],
-                        [24, 24], [25, 25], [26, 26], [27, 27], [28, 28], [29, 29], [30, 30], [31, 31], [32, 32], [33, 33], [34, 34], [35, 35],
-                          [36, 36], [37, 37], [38, 38], [39, 39], [40, 40], [41, 41], [42, 42], [43, 43], [44, 44], [45, 45], [46, 46], [47, 47],
-                            [48, 48], [49, 49], [50, 50]]
-
-      const selectedCoins = this.state.arrayRank.filter((obj) => ranked.slice(this.state.slide[0] - 1, this.state.slide[1]).map((coin) => {return coin[1]}).includes(obj.symbol))
-      console.log(selectedCoins)
-      let total = 0
-      selectedCoins.forEach((pair) => total += pair.value)
-      if (this.state.algoName == '') {
-        message.warning('Name is required')
-      }
-      else if (!(this.state.days > 0) && !(this.state.days <= 365)){
-        message.warning('Days between rebalancing is required! (0-365)')
-      }
-      else if (total !== 100) {
-        message.warning('Total % must add up to 100')
-      }
-      else {
-        console.log(selectedCoins.map((item) => [item.symbol, item.value]))
-        console.log(selectedCoins)
-        console.log(this.state.algoName)
-        console.log(this.state.days)
-        console.log(this.props.user_profile.user_id)
-        const algoType = { type: this.state.type, reb_type: this.state.rebType, reb_day: this.state.days}
-        const algoData = {
-          user_id: this.props.user_profile.user_id,
-          algo_name: this.state.algoName,
-          algo_type: algoType,
-          algo: selectedCoins.map((item) =>  {return { symbol: item.symbol, value: item.value}})
-        }
-        console.log(algoData)
-        addAlgo(algoData)
-          .then((data) => {
-            console.log(data)
-            if (data == true) {
-              getUserAlgos(this.props.user_profile.user_id)
-                .then((algos) => {
-                  console.log(algos)
-                  this.props.saveUserAlgos(algos)
-                })
-              getAllAlgos()
-                .then((algoData) => {
-                  this.props.saveAllAlgos(algoData)
-                })
-            }
-            else {
-              message.error('Algo name already exists')
-            }
-          })
-      }
-    }
-
-
-    // const selectedCoins = this.props.top_ranks.slice(this.state.slide[0] - 1, this.state.slide[1])
-    // console.log(this.state.arrayCoin.filter((obj) => selectedCoins.map((coin) => {return coin[1]}).includes(obj.symbol)))
-
-  }
-
-
-  renderRankingType() {
-    return (
-      <div>
-        <Radio.Group type='primary' value={this.state.selection} onChange={e => this.setState({ rebType: e.target.value})}>
-          <Popover content={<p>Rebalance into selected ranks</p>} title="By Rank">
-  				    <Radio.Button value='rank'>By Rank</Radio.Button>
-          </Popover>
-          <Popover content={<p>Rebalance into selected coins</p>} title="By Coin">
-  				    <Radio.Button value='coin'>By Coin</Radio.Button>
-          </Popover>
-  			</Radio.Group>
-      </div>
-    )
-  }
-
-  renderCoins() {
-    const handleChange = (val, coin) => {
-      const filtered = this.state.arrayCoin.filter((obj) => obj.symbol !== coin )
-      console.log(filtered)
-      console.log(val)
-      if (!val) {
-        console.log('caught')
-        val = 0
-      }
-      this.setState({
-        arrayCoin: filtered.concat({ symbol: coin, value: parseInt(val)})
-      })
-    }
-    let topCoins = this.props.top_ranks.slice(this.state.slide[0] - 1, this.state.slide[1])
-
-    return (
-      <List
-      grid={{ gutter: 16, xs: 2, sm: 2, md: 6, lg: 6, xl: 8, xxl: 8 }}
-      dataSource={topCoins}
-      renderItem={item => (
-        <List.Item>
-          <Card title={item[1]}><Input value={this.findValues(item[1])} onChange={(e) => handleChange(e.target.value, item[1])} placeholder='0'></Input></Card>
-        </List.Item>
-      )}
-      />
-    )
-  }
-
-  findValues(coin) {
-    const ranked = [[1, 1], [2, 2], [3, 3], [4, 4], [5, 5], [6, 6], [7, 7], [8, 8], [9, 9], [10, 10], [11, 11],
-                    [12, 12], [13, 13], [14, 14], [15, 15], [16, 16], [17, 17], [18, 18], [19, 19], [20, 20], [21, 21], [22, 22], [23, 23],
-                      [24, 24], [25, 25], [26, 26], [27, 27], [28, 28], [29, 29], [30, 30], [31, 31], [32, 32], [33, 33], [34, 34], [35, 35],
-                        [36, 36], [37, 37], [38, 38], [39, 39], [40, 40], [41, 41], [42, 42], [43, 43], [44, 44], [45, 45], [46, 46], [47, 47],
-                          [48, 48], [49, 49], [50, 50]]
-    if (this.state.rebType == 'coin') {
-      console.log('hitfind')
-      const selectedCoins =this.state.arrayCoin.filter((obj) => this.props.top_ranks.slice(this.state.slide[0] - 1, this.state.slide[1]).map((coin) => {return coin[1]}).includes(obj.symbol))
-      console.log(coin)
-      const newShit = selectedCoins.filter((stuff) => stuff.symbol == coin && stuff.value !== 0)
-      console.log(newShit)
-      if (newShit.length > 0) {
-        return newShit[0].value
-      }
-      else {
-        return null
-      }
-    }
-    else if (this.state.rebType == 'rank') {
-      console.log('hitfind')
-      const selectedCoins =this.state.arrayRank.filter((obj) => ranked.slice(this.state.slide[0] - 1, this.state.slide[1]).map((coin) => {return coin[1]}).includes(obj.symbol))
-      console.log(coin)
-      const newShit = selectedCoins.filter((stuff) => stuff.symbol == coin && stuff.value !== 0)
-      console.log(newShit)
-      if (newShit.length > 0) {
-        return newShit[0].value
-      }
-      else {
-        return null
-      }
-    }
-  }
-
-  renderRanks() {
-    const handleChange = (val, coin) => {
-      const filtered = this.state.arrayRank.filter((obj) => obj.symbol !== coin)
-      console.log(filtered)
-      console.log(val)
-      if (!val) {
-        console.log('caught')
-        val = 0
-      }
-      this.setState({
-        arrayRank: filtered.concat({ symbol: coin, value: parseInt(val)})
-      })
-    }
-    const ranked = [[1, 1], [2, 2], [3, 3], [4, 4], [5, 5], [6, 6], [7, 7], [8, 8], [9, 9], [10, 10], [11, 11],
-                    [12, 12], [13, 13], [14, 14], [15, 15], [16, 16], [17, 17], [18, 18], [19, 19], [20, 20], [21, 21], [22, 22], [23, 23],
-                      [24, 24], [25, 25], [26, 26], [27, 27], [28, 28], [29, 29], [30, 30], [31, 31], [32, 32], [33, 33], [34, 34], [35, 35],
-                        [36, 36], [37, 37], [38, 38], [39, 39], [40, 40], [41, 41], [42, 42], [43, 43], [44, 44], [45, 45], [46, 46], [47, 47],
-                          [48, 48], [49, 49], [50, 50]]
-
-    let topRanks = ranked.slice(this.state.slide[0] - 1, this.state.slide[1])
-
-    return (
-      <List
-      grid={{ gutter: 16, xs: 2, sm: 2, md: 6, lg: 6, xl: 8, xxl: 8 }}
-      dataSource={topRanks}
-      renderItem={item => (
-        <List.Item>
-          <Card title={'RANK ' + item[0]}><Input value={this.findValues(item[0])} onChange={(e) => handleChange(e.target.value, item[0])} placeholder='0'></Input></Card>
-        </List.Item>
-      )}
-      />
-    )
-  }
-
 
   renderButton(algo_id) {
-    if (this.props.user_selected) {
-      if (this.props.user_selected.algo_id == algo_id) {
-        return (<div style={{color: '#FF4500'}}><Icon type='star-o' /> Selected Bot</div>)
+    if (this.props.user_selected && this.props.user_selected[0]) {
+      console.log(algo_id)
+      console.log(this.props.user_selected[0].algo_id)
+      if (this.props.user_selected[0].algo_id == algo_id) {
+        return (<div style={{color: '#FF4500'}}><Icon type='star-o' /> Selected Strategy </div>)
       }
       else {
         return (<Button type='default' onClick={() => this.selectBot(algo_id)} >Select Strategy</Button>)
@@ -463,23 +69,52 @@ class BotPage extends Component {
            itemLayout="horizontal"
            dataSource={this.props.user_algos}
            renderItem={item => (
-             <List.Item actions={[<a>edit</a>]}>
+             <List.Item actions={[<a>remove</a>]}>
+               <Popover content={<p>{this.popoverAlgo(item.algo, item.algo_type)}</p>} title={item.algo_name + ' (' + item.algo_type.type + ': ' + item.algo_type.reb_type + ')'}>
                <List.Item.Meta
                  avatar={<Avatar src="https://image.ibb.co/fVto1o/784915.jpg" />}
-                 title={
-                   <Popover content={<p>{JSON.stringify(item.algo)}</p>} title={item.algo_name}>
-                     <a>
-                      {item.algo_name}
-                     </a>
-                   </Popover>
-                 }
+                 title={item.algo_name}
                />
+               </Popover>
                <div>{this.renderButton(item.algo_id)}</div>
              </List.Item>
            )}
          />
         </div>
       )
+    }
+  }
+
+  removeFollow(follow_id) {
+    deleteFollows({ follow_ids: [follow_id], user_id: this.props.user_profile.user_id})
+			.then((data) => {
+				console.log(data)
+				if (data) {
+					getUserFollows(this.props.user_profile.user_id)
+						.then((data) => {
+							this.props.saveUserFollows(data)
+              message.success('Successfully removed follow')
+						})
+				}
+			})
+  }
+
+  popoverAlgo(algo, algoType) {
+    if (algoType.type == 'Rebalance') {
+      if (algoType.reb_type == 'rank') {
+        let prettied = ''
+        algo.forEach((ranks) => {prettied = prettied + 'RANK ' + ranks.symbol + ': ' + ranks.value + '%,   '})
+        return (
+          <p>{prettied}</p>
+        )
+      }
+      else if (algoType.reb_type == 'coin') {
+        let prettied = ''
+        algo.forEach((coins) => {prettied = prettied + coins.symbol + ': ' + coins.value + '%,   '})
+        return (
+          <p>{prettied}</p>
+        )
+      }
     }
   }
 
@@ -492,17 +127,15 @@ class BotPage extends Component {
            itemLayout="horizontal"
            dataSource={this.props.user_follows}
            renderItem={item => (
-             <List.Item actions={[<a>edit</a>]}>
+             <List.Item actions={[<a onClick={() => this.removeFollow(item.follow_id)}>remove</a>]}>
+              <Popover content={<p>{this.popoverAlgo(item.algo, item.algo_type)}</p>} title={item.algo_name + ' (' + item.algo_type.type + ': ' + item.algo_type.reb_type + ')'}>
                <List.Item.Meta
                  avatar={<Avatar src="https://image.ibb.co/fVto1o/784915.jpg" />}
                  title={
-                   <Popover content={<p>{JSON.stringify(item.algo)}</p>} title={item.algo_name}>
-                     <a>
-                      {item.algo_name}
-                     </a>
-                   </Popover>
+                   item.algo_name
                  }
                />
+               </Popover>
                <div>{this.renderButton(item.algo_id)}</div>
              </List.Item>
            )}
@@ -559,10 +192,27 @@ class BotPage extends Component {
 
   isActive() {
     if (this.props.user_selected[0].active == false) {
-      return <Button type='primary' loading={this.state.activatedButton} onClick={() => this.activate()}>Activate Strategy</Button>
+      return <Button type='primary' loading={this.state.activatedButton} style={{color: this.state.color2}} onClick={() => this.activate()}>Activate Strategy</Button>
     }
     else if (this.props.user_selected[0].active == true){
       return <Button type='primary' loading={this.state.activatedButton} onClick={() => this.deactivate()}>Deactivate Strategy</Button>
+    }
+  }
+
+  removeSelected() {
+    if (this.props.user_selected[0].active) {
+      message.warning('Your strategy is active, please deactivate before removing')
+    }
+    else {
+      deleteUserBot(this.props.user_profile.user_id)
+        .then((data) => {
+          console.log(data)
+          message.success('Successfully removed selected strategy')
+          return getBot(this.props.user_profile.user_id)
+        })
+        .then((data) => {
+          this.props.saveUserSelected(data)
+        })
     }
   }
 
@@ -574,23 +224,29 @@ class BotPage extends Component {
          itemLayout="horizontal"
          dataSource={this.props.user_selected}
          renderItem={item => (
-           <List.Item actions={[<a>edit</a>]}>
+           <List.Item actions={[<a onClick={() => this.removeSelected()}>remove</a>]}>
+             <Popover content={<p>{this.popoverAlgo(item.algo, item.algo_type)}</p>} title={item.algo_name + ' (' + item.algo_type.type + ': ' + item.algo_type.reb_type + ')'}>
              <List.Item.Meta
                avatar={<Avatar src="https://image.ibb.co/fVto1o/784915.jpg" />}
-               title={
-                 <Popover content={<p>{JSON.stringify(item.algo)}</p>} title={item.algo_name}>
-                   <a style={{color: 'orange'}}>
-                    {item.algo_name}
-                   </a>
-                 </Popover>
-               }
+               title={item.algo_name}
              />
+             </Popover>
              <div>{this.isActive()}</div>
            </List.Item>
          )}
        />
       )
     }
+    else {
+      return (
+        <div>
+          <center>
+            <p>No strategy currently selected. Discover strategies or create your own. <Button>Strategy Page</Button></p>
+          </center>
+        </div>
+      )
+    }
+
   }
 
   runtest() {
@@ -611,10 +267,10 @@ class BotPage extends Component {
         {
           this.renderHeader()
         }
-        <Divider>Create Strategy</Divider>
-				{
-					this.renderAlgoInputs()
-				}
+        <Divider style={{color: '#FF4500'}}><Icon type='star-o'/> Selected Strategy</Divider>
+        {
+          this.renderSelectedBot()
+        }
 				<Divider>My Strategies</Divider>
         <p><b>Created</b></p>
 				{
@@ -623,10 +279,6 @@ class BotPage extends Component {
         <p style={{marginTop: '3%'}}><b>Following</b></p>
         {
           this.renderFollowList()
-        }
-        <Divider style={{color: '#FF4500'}}><Icon type='star-o'/> Selected Bot</Divider>
-        {
-          this.renderSelectedBot()
         }
 				</QueueAnim>
 			</Card>
@@ -653,9 +305,8 @@ BotPage.propTypes = {
 	history: PropTypes.object.isRequired,
   user_profile: PropTypes.object.isRequired,
 	loading_complete: PropTypes.bool.isRequired,
-  saveUserAlgos: PropTypes.func.isRequired,
   saveUserSelected: PropTypes.func.isRequired,
-  saveAllAlgos: PropTypes.func.isRequired,
+  saveUserFollows: PropTypes.func.isRequired,
 }
 
 // for all optional props, define a default value
@@ -673,16 +324,14 @@ const mapReduxToProps = (redux) => {
     user_algos: redux.algos.user_algos,
     user_selected: redux.algos.user_selected,
     user_follows: redux.algos.user_follows,
-    top_ranks: redux.cmc.top_ranks,
 	}
 }
 
 // Connect together the Redux store with this React component
 export default withRouter(
 	connect(mapReduxToProps, {
-    saveUserAlgos,
     saveUserSelected,
-    saveAllAlgos,
+    saveUserFollows
 	})(RadiumHOC)
 )
 
