@@ -20,6 +20,7 @@ import 'antd/dist/antd.css'
 import 'ant-design-pro/dist/ant-design-pro.css'
 import CountDown from 'ant-design-pro/lib/CountDown'
 import { changeSelectedTab } from '../../actions/app/app_actions'
+import math from 'mathjs'
 import {
 	Card, Row, Col, Icon, Tooltip, Divider, Menu, Dropdown, Button
 } from 'antd'
@@ -40,43 +41,6 @@ const shortEnglishHumanizer = humanizeDuration.humanizer({
   }
 })
 
-const ticker = (
-	<Menu>
-		<Menu.Item><a onClick={() => this.changeGraphState(0,'BTCUSDT')}>BTC/USDT</a></Menu.Item>
-		<Menu.Item><a onClick={() => this.changeGraphState(0,'EOSBTC')}>EOS/BTC</a></Menu.Item>
-		<Menu.Item><a onClick={() => this.changeGraphState(0,'ETHBTC')}>ETH/BTC</a></Menu.Item>
-		<Menu.Item><a onClick={() => this.changeGraphState(0,'TRXBTC')}>TRX/BTC</a></Menu.Item>
-		<Menu.Item><a onClick={() => this.changeGraphState(0,'ETCBTC')}>ETC/BTC</a></Menu.Item>
-		<Menu.Item><a onClick={() => this.changeGraphState(0,'VENBTC')}>VEN/BTC</a></Menu.Item>
-		<Menu.Item><a onClick={() => this.changeGraphState(0,'ADABTC')}>ADA/BTC</a></Menu.Item>
-		<Menu.Item><a onClick={() => this.changeGraphState(0,'ICXBTC')}>ICX/BTC</a></Menu.Item>
-		<Menu.Item><a onClick={() => this.changeGraphState(0,'XRPBTC')}>XRP/BTC</a></Menu.Item>
-		<Menu.Item><a onClick={() => this.changeGraphState(0,'XLMBTC')}>XLM/BTC</a></Menu.Item>
-		<Menu.Item><a onClick={() => this.changeGraphState(0,'ZRXBTC')}>ZRX/BTC</a></Menu.Item>
-		<Menu.Item><a onClick={() => this.changeGraphState(0,'LTCBTC')}>LTC/BTC</a></Menu.Item>
-		<Menu.Item><a onClick={() => this.changeGraphState(0,'ARNBTC')}>ARN/BTC</a></Menu.Item>
-		<Menu.Item><a onClick={() => this.changeGraphState(0,'NEOBTC')}>NEO/BTC</a></Menu.Item>
-	</Menu>
-)
-const timeframe = (
-	<Menu >
-		<Menu.Item><a onClick={() => this.changeGraphState(1,'1m')}>1m</a></Menu.Item>
-		<Menu.Item><a onClick={() => this.changeGraphState(1,'3m')}>3m</a></Menu.Item>
-		<Menu.Item><a onClick={() => this.changeGraphState(1,'5m')}>5m</a></Menu.Item>
-		<Menu.Item><a onClick={() => this.changeGraphState(1,'15m')}>15m</a></Menu.Item>
-		<Menu.Item><a onClick={() => this.changeGraphState(1,'30m')}>30m</a></Menu.Item>
-		<Menu.Item><a onClick={() => this.changeGraphState(1,'1h')}>1h</a></Menu.Item>
-		<Menu.Item><a onClick={() => this.changeGraphState(1,'2h')}>2h</a></Menu.Item>
-		<Menu.Item><a onClick={() => this.changeGraphState(1,'4h')}>4h</a></Menu.Item>
-		<Menu.Item><a onClick={() => this.changeGraphState(1,'6h')}>6h</a></Menu.Item>
-		<Menu.Item><a onClick={() => this.changeGraphState(1,'8h')}>8h</a></Menu.Item>
-		<Menu.Item><a onClick={() => this.changeGraphState(1,'12h')}>12h</a></Menu.Item>
-		<Menu.Item><a onClick={() => this.changeGraphState(1,'1d')}>1d</a></Menu.Item>
-		<Menu.Item><a onClick={() => this.changeGraphState(1,'3d')}>3d</a></Menu.Item>
-		<Menu.Item><a onClick={() => this.changeGraphState(1,'1w')}>1w</a></Menu.Item>
-		<Menu.Item><a onClick={() => this.changeGraphState(1,'1M')}>1M</a></Menu.Item>
-	</Menu>
-)
 
 class AppHome extends Component {
 
@@ -148,11 +112,11 @@ class AppHome extends Component {
 							subTitle="Allocations"
 							total={() => (
 								<div>
-									{'$' + this.state.salesPieData.reduce((pre, now) => now.y + pre, 0).toFixed(2)}
+									{'$' + math.round(this.state.salesPieData.reduce((pre, now) => now.y + pre, 0), 2)}
 								</div>
 							)}
 							data={this.state.salesPieData}
-							valueFormat={val => <div>{'$' + val.toFixed(2)}</div> }
+							valueFormat={val => <div>{'$' + math.round( val ,2)}</div> }
 							height={240}
 						/>
 					</div>
@@ -201,6 +165,44 @@ class AppHome extends Component {
 	}
 
 	renderCardBelow() {
+
+		const ticker = (
+			<Menu>
+				<Menu.Item><a onClick={() => this.changeGraphState(0,'BTCUSDT')}>BTC/USDT</a></Menu.Item>
+				<Menu.Item><a onClick={() => this.changeGraphState(0,'EOSBTC')}>EOS/BTC</a></Menu.Item>
+				<Menu.Item><a onClick={() => this.changeGraphState(0,'ETHBTC')}>ETH/BTC</a></Menu.Item>
+				<Menu.Item><a onClick={() => this.changeGraphState(0,'TRXBTC')}>TRX/BTC</a></Menu.Item>
+				<Menu.Item><a onClick={() => this.changeGraphState(0,'ETCBTC')}>ETC/BTC</a></Menu.Item>
+				<Menu.Item><a onClick={() => this.changeGraphState(0,'VENBTC')}>VEN/BTC</a></Menu.Item>
+				<Menu.Item><a onClick={() => this.changeGraphState(0,'ADABTC')}>ADA/BTC</a></Menu.Item>
+				<Menu.Item><a onClick={() => this.changeGraphState(0,'ICXBTC')}>ICX/BTC</a></Menu.Item>
+				<Menu.Item><a onClick={() => this.changeGraphState(0,'XRPBTC')}>XRP/BTC</a></Menu.Item>
+				<Menu.Item><a onClick={() => this.changeGraphState(0,'XLMBTC')}>XLM/BTC</a></Menu.Item>
+				<Menu.Item><a onClick={() => this.changeGraphState(0,'ZRXBTC')}>ZRX/BTC</a></Menu.Item>
+				<Menu.Item><a onClick={() => this.changeGraphState(0,'LTCBTC')}>LTC/BTC</a></Menu.Item>
+				<Menu.Item><a onClick={() => this.changeGraphState(0,'ARNBTC')}>ARN/BTC</a></Menu.Item>
+				<Menu.Item><a onClick={() => this.changeGraphState(0,'NEOBTC')}>NEO/BTC</a></Menu.Item>
+			</Menu>
+		)
+		const timeframe = (
+			<Menu >
+				<Menu.Item><a onClick={() => this.changeGraphState(1,'1m')}>1m</a></Menu.Item>
+				<Menu.Item><a onClick={() => this.changeGraphState(1,'3m')}>3m</a></Menu.Item>
+				<Menu.Item><a onClick={() => this.changeGraphState(1,'5m')}>5m</a></Menu.Item>
+				<Menu.Item><a onClick={() => this.changeGraphState(1,'15m')}>15m</a></Menu.Item>
+				<Menu.Item><a onClick={() => this.changeGraphState(1,'30m')}>30m</a></Menu.Item>
+				<Menu.Item><a onClick={() => this.changeGraphState(1,'1h')}>1h</a></Menu.Item>
+				<Menu.Item><a onClick={() => this.changeGraphState(1,'2h')}>2h</a></Menu.Item>
+				<Menu.Item><a onClick={() => this.changeGraphState(1,'4h')}>4h</a></Menu.Item>
+				<Menu.Item><a onClick={() => this.changeGraphState(1,'6h')}>6h</a></Menu.Item>
+				<Menu.Item><a onClick={() => this.changeGraphState(1,'8h')}>8h</a></Menu.Item>
+				<Menu.Item><a onClick={() => this.changeGraphState(1,'12h')}>12h</a></Menu.Item>
+				<Menu.Item><a onClick={() => this.changeGraphState(1,'1d')}>1d</a></Menu.Item>
+				<Menu.Item><a onClick={() => this.changeGraphState(1,'3d')}>3d</a></Menu.Item>
+				<Menu.Item><a onClick={() => this.changeGraphState(1,'1w')}>1w</a></Menu.Item>
+				<Menu.Item><a onClick={() => this.changeGraphState(1,'1M')}>1M</a></Menu.Item>
+			</Menu>
+		)
 
 		return (
 			<div style={{marginTop: '1%'}}>

@@ -12,6 +12,7 @@ import { addAlgo, getUserAlgos, addFollows, getUserFollows, deleteFollows, getAl
 import { saveUserAlgos, saveUserFollows, saveAllAlgos } from '../../actions/algo/algo_actions'
 import Trend from 'ant-design-pro/lib/Trend'
 import numeral from 'numeral'
+import math from 'mathjs'
 import {
   List, Avatar, Button, Spin, Input, Card, Divider, Icon, message, Checkbox, Popover, Radio, Slider,
 } from 'antd'
@@ -254,7 +255,7 @@ class StrategyPage extends Component {
 							<tr>
 								<th width="8%"></th>
 								<th>Name</th>
-								<th>Owner</th>
+								<th>Creator</th>
 								<th>Hour</th>
 								<th>Day</th>
 								<th>Week</th>
@@ -276,7 +277,7 @@ class StrategyPage extends Component {
                         }
                       </th>
 											<th>{item.algo_name}</th>
-											<th>{item.user_id}</th>
+											<th>{item.user_id.slice(-6)}</th>
 											<th>{this.calculatePercent(item.algo, item.algo_type, 2)}</th>
 											<th>{this.calculatePercent(item.algo, item.algo_type, 3)}</th>
 											<th>{this.calculatePercent(item.algo, item.algo_type, 4)}</th>
@@ -298,12 +299,12 @@ class StrategyPage extends Component {
       if (algo_type.reb_type == 'rank') {
         let thingy = {}
         const symbols = algo.map(coin => coin.symbol)
-        const values = algo.forEach(coin => thingy[coin.symbol] = coin.value)
+        algo.forEach(coin => thingy[coin.symbol] = coin.value)
         console.log(symbols)
         console.log(thingy)
         const used = this.props.top_ranks.filter(coin => symbols.includes(coin[0]))
         console.log(used)
-        const percents = used.map(coin => (coin[index] * 1000) * thingy[coin[0]]).reduce((a,b) => a + b)/100000
+        const percents = math.round(used.map(coin => (coin[index]) * thingy[coin[0]]).reduce((a,b) => a + b) /100, 2)
         console.log(percents)
         if (percents >= 0) {
           return (
@@ -322,11 +323,10 @@ class StrategyPage extends Component {
       else if (algo_type.reb_type == 'coin') {
         let thingy = {}
         const symbols = algo.map(coin => coin.symbol)
-        const values = algo.forEach(coin => thingy[coin.symbol] = coin.value)
+        algo.forEach(coin => thingy[coin.symbol] = coin.value)
         const used = this.props.top_ranks.filter(coin => symbols.includes(coin[1]))
         const percents = used.map(coin => (coin[index] * 1000) * thingy[coin[1]]).reduce((a,b) => a + b)/100000
         console.log(symbols)
-        console.log(values)
         console.log(used)
         if (percents >= 0) {
           return (

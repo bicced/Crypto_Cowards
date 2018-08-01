@@ -59,12 +59,16 @@ export default (ComposedComponent) => {
 
 			// do stuff based on the URL
 			this.executeOnURL()
-			getTopRanks()
-				.then((data) =>{
-					console.log(data)
-					console.log(data.filter((coin) => binanceSymbols.includes(coin[1])))
-					this.props.saveTopRanks(data.filter((coin) => binanceSymbols.includes(coin[1])))
-				})
+
+			setInterval(
+				getTopRanks()
+					.then((data) =>{
+						console.log(data)
+						console.log(data.filter((coin) => binanceSymbols.includes(coin[1])))
+						this.props.saveTopRanks(data.filter((coin) => binanceSymbols.includes(coin[1])))
+					})
+				, 960000)
+
 			getAllAlgos()
 				.then((algoData) => {
 					this.props.saveAllAlgos(algoData)

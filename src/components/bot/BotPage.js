@@ -17,7 +17,7 @@ import {
 	WhiteSpace
 } from 'antd-mobile'
 import { saveBot, getBot, activateBot, deactivateBot, deleteUserBot } from '../../api/bot/selected_bot'
-import { getUserFollows, deleteFollows} from '../../api/algo/user_algos'
+import { getUserFollows, deleteFollows, deleteAlgo} from '../../api/algo/user_algos'
 import Texty from 'rc-texty'
 import 'rc-texty/assets/index.css'
 
@@ -60,6 +60,14 @@ class BotPage extends Component {
     }
   }
 
+  deleteAlg(algo_id) {
+    console.log(algo_id)
+    deleteAlgo(algo_id)
+      .then((data) => {
+        console.log(data)
+      })
+  }
+
   renderAlgoList() {
     if (this.props.user_algos.length > 0) {
       return (
@@ -69,7 +77,19 @@ class BotPage extends Component {
            itemLayout="horizontal"
            dataSource={this.props.user_algos}
            renderItem={item => (
-             <List.Item actions={[<a>remove</a>]}>
+             <List.Item
+               actions={[
+                 <a>
+                   <Popover
+                    trigger="click"
+                    placement="left"
+                    content={<a onClick={this.hide}>Are you sure? <br/>This will stop all bots that are currently running this strategy. <br/><Button onClick={() => this.deleteAlg(item.algo_id)} style={{color:'red'}}>DELETE</Button></a>}
+                  >
+                    remove
+                  </Popover>
+
+                 </a>
+               ]}>
                <Popover content={<p>{this.popoverAlgo(item.algo, item.algo_type)}</p>} title={item.algo_name + ' (' + item.algo_type.type + ': ' + item.algo_type.reb_type + ')'}>
                <List.Item.Meta
                  avatar={<Avatar src="https://image.ibb.co/fVto1o/784915.jpg" />}
@@ -252,7 +272,6 @@ class BotPage extends Component {
   runtest() {
     checkRebalancing()
   }
-
 
   renderAlgo() {
     return (

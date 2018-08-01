@@ -17,6 +17,21 @@ export const addAlgo = (algoData) => {
   return p
 }
 
+export const deleteAlgo = (algo_id) => {
+  const p = new Promise((res, rej) => {
+    axios.post(`${ACCOUNTS_MICROSERVICE}/delete_algo`, {algo_id}, authHeaders())
+      .then((data) => {
+        // once we have the response, only then do we dispatch an action to Redux
+        console.log(data.data)
+        res(data.data.user_algos)
+      })
+      .catch((err) => {
+        rej(err)
+      })
+  })
+  return p
+}
+
 export const getUserAlgos = (user_id) => {
   const p = new Promise((res, rej) => {
     axios.post(`${ACCOUNTS_MICROSERVICE}/get_user_algos`, {user_id}, authHeaders())
