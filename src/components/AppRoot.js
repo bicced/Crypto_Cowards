@@ -54,7 +54,7 @@ class AppRoot extends Component {
       return (
         <div style={comStyles().loadingContainer}>
           <TweenOne
-            animation={{ scale: 0.9, yoyo: true, repeat: 1, duration: 900 }}
+            animation={{ scale: 0.9, yoyo: true, repeat: 0, duration: 900 }}
             style={{ transform: 'scale(1)' }}
           >
            <h1 style={comStyles().font_logo}>CryptoCowards</h1>

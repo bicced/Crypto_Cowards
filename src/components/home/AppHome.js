@@ -90,7 +90,7 @@ class AppHome extends Component {
 								target={this.state.targetTime}
 							/>
 							:
-							<div style={{ fontSize: '150%', marginTop: '10%' }} onClick={() => this.props.changeSelectedTab('bot')}>No active strategies</div>
+							<a style={{ fontSize: '150%', marginTop: '10%' }} onClick={() => this.props.changeSelectedTab('bot')}>No active strategies</a>
 						}
 						<WaterWave
 							height={220}
@@ -126,7 +126,8 @@ class AppHome extends Component {
 	}
 
 	linkApiButton() {
-
+		console.log('clicked')
+		this.props.changeSelectedTab('settings')
 	}
 
 	grabGraphs() {

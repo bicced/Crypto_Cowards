@@ -33,31 +33,6 @@ class SettingsPage extends Component {
 		this.state = {
 			apiKey: '',
 			apiSecret: '',
-			role: null,
-
-			selection: '',
-		}
-	}
-
-	componentWillMount(){
-		// this.setState({ user_profile: this.props.user_profile}, () => console.log(this.state.user_profile))
-		if (this.props.user_profile.coward_id) {
-			this.setState({
-				selection: 'a',
-			})
-		} else if (this.props.user_profile.pro_id) {
-			this.setState({
-				selection: 'b',
-			})
-		}
-	}
-
-	componentDidMount() {
-		if (this.props.user_profile.coward_id) {
-			this.setState({role: true})
-		}
-		else if (this.props.user_profile.pro_id) {
-			this.setState({role: false})
 		}
 	}
 
@@ -98,11 +73,14 @@ class SettingsPage extends Component {
       <div style={{ margin: '10px 10px 0px 10px' }}>
         <div style={comStyles().rowContainer}>
           <h2 style={{ margin: 0 }}>{`${this.props.user_profile.first_name} ${this.props.user_profile.last_name}`}</h2>
+					<Button type='primary' ghost onClick={() => console.log('soon')}>
+						UPGRADE TO PRO
+					</Button>
         </div>
         <br />
         <div>
           <p>{`Email: ${this.props.user_profile.email}`}</p>
-					<p>{`Account Type: `}{this.props.user_profile.pro_id ? 'Pro' : 'Free'}</p>
+					<p>{`Account Type: `}{this.props.user_profile.pro ? 'Pro' : 'Free'}</p>
         </div>
       </div>
     )
@@ -127,7 +105,7 @@ class SettingsPage extends Component {
 					<div style={comStyles().rowContainer}>
 						<h2 style={{ margin: 0 }}>API Keys</h2>
 						<Button type='primary' ghost onClick={() => this.removeApi()}>
-							Reset Keys
+							RESET KEYS
 						</Button>
 					</div>
 					<br />
@@ -143,59 +121,21 @@ class SettingsPage extends Component {
 				<div>
 					<div style={comStyles().rowContainer}>
 						<h2 style={{ margin: 0, color: 'red'}}>API Keys (Required)</h2>
-						<Button type='primary' ghost onClick={() => this.submitKeys()} disabled={this.checkApi()}>Submit</Button>
+						<Button type='primary' ghost onClick={() => this.submitKeys()} disabled={this.checkApi()}>SUBMIT</Button>
 					</div>
 					<br />
 					<div>
 						<p>{`API Key: (${this.state.apiKey.length}/64)`}</p><Input onChange={(e) => this.setState({ apiKey: e.target.value })}></Input>
 						<p>{`API Secret: (${this.state.apiSecret.length}/64)`}</p><Input onChange={(e) => this.setState({ apiSecret: e.target.value })}></Input>
 					</div>
+					<br/>
+					<p>Your <a href='www.binance.com'>Binance API Keys</a> are required for us to run strategies on your behalf</p>
+
 				</div>
 			)
 		}
 	}
 
-	addCowardButton(){
-		addCoward(this.props.user_profile.user_id)
-			.then((role) => {
-				console.log(role)
-				let new_profile = this.props.user_profile
-				new_profile.coward_id = role
-				console.log(new_profile)
-				this.props.saveUserProfileToRedux(new_profile)
-				return Promise.resolve('Got to the next step!')
-			})
-			.then((msg) => {
-				console.log(msg)
-			})
-			.catch((err) => {
-				 console.log(err)
-			})
-	}
-
-	addProButton(){
-		addPro(this.props.user_profile.user_id)
-	}
-
-	renderAccountRole() {
-
-		const makeSelection = (selection) => {
-			this.setState({
-				selection,
-			})
-			if (selection === 'a') {
-				this.addCowardButton()
-			} else if (selection === 'b') {
-				this.addProButton()
-			}
-		}
-		return (
-			<Radio.Group value={this.state.selection} onChange={e => makeSelection(e.target.value)}>
-				<Radio.Button value='a'>Cowards</Radio.Button>
-				<Radio.Button value='b'>Pro</Radio.Button>
-			</Radio.Group>
-		)
-	}
 
 	renderUserApiPreview() {
 
@@ -225,10 +165,6 @@ class SettingsPage extends Component {
 					<Divider>API Keys</Divider>
 					{
 						this.renderUserApiPreview()
-					}
-					<Divider>Account Role</Divider>
-					{
-						this.renderAccountRole()
 					}
 				</QueueAnim>
 			</Card>
