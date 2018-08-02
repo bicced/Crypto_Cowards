@@ -78,7 +78,7 @@ class AppHome extends Component {
 
 	renderCardRow() {
 		return (
-			<div style={screen.width >= 550 ? comStyles().topCards : comStyles().topCardz}>
+			<div style={screen.width >= 1000 ? comStyles().topCards : comStyles().topCardz}>
 				<ChartCard style={{width: '100%'}} title="Next Rebalancing">
 					<div style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-around'}}>
 						{
