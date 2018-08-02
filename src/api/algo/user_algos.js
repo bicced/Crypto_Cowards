@@ -17,9 +17,9 @@ export const addAlgo = (algoData) => {
   return p
 }
 
-export const deleteAlgo = (algo_id) => {
+export const deleteAlgo = (algo_data) => {
   const p = new Promise((res, rej) => {
-    axios.post(`${ACCOUNTS_MICROSERVICE}/delete_algo`, {algo_id}, authHeaders())
+    axios.post(`${ACCOUNTS_MICROSERVICE}/delete_algo`, algo_data, authHeaders())
       .then((data) => {
         // once we have the response, only then do we dispatch an action to Redux
         console.log(data.data)

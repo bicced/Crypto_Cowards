@@ -72,7 +72,7 @@ class HomePage extends Component {
           self.props.authenticateUser('something')
           self.props.saveUserProfileToRedux(data.profile)
           if (data.new_entry) {
-            self.props.history.push('/onboarding/checkuser')
+            self.props.history.push('/onboarding/checkuser') //onboarding/checkuser
           } else {
             // self.props.history.push('/onboarding/checkuser')
             self.props.history.push('/app/home')

@@ -26,7 +26,6 @@ import {
 } from '../api/general/general_api'
 import {
 	getUserProfile,
-	checkAccountRole,
 	userApiExists,
 } from '../api/auth/auth_api'
 import {
@@ -34,13 +33,15 @@ import {
 	getAllAlgos,
 	getUserFollows,
 } from '../api/algo/user_algos'
+import { getUserNotifications } from '../api/notifications/user_notifications'
+import { saveNotifications } from '../actions/notifications/notification_actions'
 import { getTopRanks } from '../api/cmc/get_top'
 import { getBot } from '../api/bot/selected_bot'
 import { saveTopRanks } from '../actions/cmc/cmc_actions'
 
 const binanceSymbols = ['BTC', 'ADA', 'ADX', 'AE', 'AGI', 'AION', 'AMB', 'APPC', 'ARK', 'ARN', 'AST', 'BAT',
                   'BCC', 'BCD', 'BCN', 'BCPT', 'BLZ', 'BNB', 'BNT', 'BQX', 'BRD', 'BTG', 'BTS', 'CDT',
-                  'CHAT', 'CLOAK', 'CMT', 'CND', 'CVC', 'DASH', 'DATA', 'ARDR', 'DENT', 'DGD', 'DLT', 'DNT', 'EDO', 'ELF',
+                  'CHAT', 'CLOAK', 'CMT', 'CND', 'CVC', 'DASH', 'DATA', 'ARDR', 'HOT', 'DOCK', 'POLY', 'DENT', 'DGD', 'DLT', 'DNT', 'EDO', 'ELF',
                   'ENG', 'ENJ', 'EOS', 'ETC', 'ETH', 'EVX', 'FUEL', 'FUN', 'GAS', 'GNT', 'GRS', 'GTO', 'GVT', 'GXS', 'HSR', 'ICN', 'ICX', 'INS',
                   'IOST', 'IOTA', 'IOTX', 'KEY', 'KMD', 'KNC', 'LEND', 'LINK', 'LOOM', 'LRC', 'LSK', 'LTC', 'LUN', 'MANA', 'MCO', 'MDA', 'MFT',
                   'MOD', 'MTH', 'MTL', 'NANO', 'NAS', 'NAV', 'NCASH', 'NEBL', 'NEO', 'NPXS', 'NULS', 'NXS', 'OAX', 'OMG', 'ONT', 'OST', 'PIVX',
@@ -93,6 +94,11 @@ export default (ComposedComponent) => {
 					// if they have, then we'll auto log them in
 					this.props.history.push(location)
 					this.props.authenticationLoaded()
+					getUserNotifications(data.profile.user_id)
+						.then((data) => {
+							console.log(data)
+							this.props.saveNotifications(data)
+						})
 					getUserAlgos(data.profile.user_id)
 						.then((userAlgos) => {
 							this.props.saveUserAlgos(userAlgos)
@@ -109,25 +115,7 @@ export default (ComposedComponent) => {
 					userApiExists(data.profile.user_id)
 						.then((exists) => {
 							data.profile.api_exists = exists
-							return checkAccountRole(data.profile.user_id)
-						})
-						.then((role) => {
-							console.log(role.rows)
-							if (role.rows.length == 0){
-								console.log('neither')
-								return this.saveUserProfileToRedux(data.profile, location)
-							}
-							else if (role.rows[0].coward_id) {
-								console.log('theres a coward')
-								console.log(data.profile)
-								data.profile.coward_id = role.rows[0].coward_id
-								return this.saveUserProfileToRedux(data.profile, location)
-							}
-							else if (role.rows[0].pro_id) {
-								console.log('there is a pro')
-								data.profile.pro_id = role.rows[0].pro_id
-								return this.saveUserProfileToRedux(data.profile, location)
-							}
+							this.saveUserProfileToRedux(data.profile, location)
 						})
 				})
 				.catch((err) => {
@@ -205,6 +193,7 @@ export default (ComposedComponent) => {
 		saveUserFollows: PropTypes.func.isRequired,
 		saveUserSelected: PropTypes.func.isRequired,
 		saveTopRanks: PropTypes.func.isRequired,
+		saveNotifications: PropTypes.func.isRequired,
   }
 
   // for all optional props, define a default value
@@ -232,6 +221,7 @@ export default (ComposedComponent) => {
 			saveUserFollows,
 			saveUserSelected,
 			saveTopRanks,
+			saveNotifications,
     })(AppRootMechanics)
 	)
 }

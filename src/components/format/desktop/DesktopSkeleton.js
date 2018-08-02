@@ -35,41 +35,11 @@ class DesktopSkeleton extends Component {
 
   componentWillReceiveProps(nextProps) {
     if (this.props.selected_tab !== nextProps.selected_tab) {
+      console.log('changing tab')
       this.setState({
-        currentTabs: ['.$'.concat(this.props.selected_tab)]
+        currentTabs: ['.$'.concat(nextProps.selected_tab)]
       })
-    }
-  }
-
-  filterUniqueContacts() {
-    const unique_contacts = []
-    this.props.leads.forEach((lead) => {
-      let exists = false
-      unique_contacts.forEach((contact) => {
-        if (contact.tenant_id === lead.tenant_id) {
-          exists = true
-        }
-      })
-      if (!exists) {
-        unique_contacts.push(lead)
-      }
-    })
-
-    return unique_contacts.length
-  }
-
-  renderCounts(sub) {
-    const keys = sub.key.split('/')
-    if (keys[0] === 'people') {
-      if (keys[1] === 'leads') {
-        return this.props.leads.length
-      } else if (keys[1] === 'contacts') {
-        return this.filterUniqueContacts()
-      } else {
-        return 0
-      }
-    } else {
-      return 0
+      this.props.history.push(`/app/${nextProps.selected_tab}`)
     }
   }
 

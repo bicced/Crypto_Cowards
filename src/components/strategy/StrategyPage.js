@@ -29,7 +29,7 @@ const { TextArea } = Input
 
 const binanceSymbols = ['BTC', 'ADA', 'ADX', 'AE', 'AGI', 'AION', 'AMB', 'APPC', 'ARK', 'ARN', 'AST', 'BAT',
                   'BCC', 'BCD', 'BCN', 'BCPT', 'BLZ', 'BNB', 'BNT', 'BQX', 'BRD', 'BTG', 'BTS', 'CDT',
-                  'CHAT', 'CLOAK', 'CMT', 'CND', 'CVC', 'DASH', 'DATA', 'DENT', 'ARDR', 'DGD', 'DLT', 'DNT', 'EDO', 'ELF',
+                  'CHAT', 'CLOAK', 'CMT', 'CND', 'CVC', 'DASH', 'DATA', 'DENT', 'ARDR', 'HOT', 'DOCK', 'POLY', 'DGD', 'DLT', 'DNT', 'EDO', 'ELF',
                   'ENG', 'ENJ', 'EOS', 'ETC', 'ETH', 'EVX', 'FUEL', 'FUN', 'GAS', 'GNT', 'GRS', 'GTO', 'GVT', 'GXS', 'HSR', 'ICN', 'ICX', 'INS',
                   'IOST', 'IOTA', 'IOTX', 'KEY', 'KMD', 'KNC', 'LEND', 'LINK', 'LOOM', 'LRC', 'LSK', 'LTC', 'LUN', 'MANA', 'MCO', 'MDA', 'MFT',
                   'MOD', 'MTH', 'MTL', 'NANO', 'NAS', 'NAV', 'NCASH', 'NEBL', 'NEO', 'NPXS', 'NULS', 'NXS', 'OAX', 'OMG', 'ONT', 'OST', 'PIVX',
@@ -611,6 +611,9 @@ class StrategyPage extends Component {
       if (this.state.algoName == '') {
         message.warning('Name is required')
       }
+      else if (this.state.algoName.length > 12) {
+        message.warning('Name is too long! Use less than 12 characters')
+      }
       else if (!(this.state.days > 0) && !(this.state.days <= 365)){
         message.warning('Days between rebalancing is required! (0-365)')
       }
@@ -658,6 +661,9 @@ class StrategyPage extends Component {
       selectedCoins.forEach((pair) => total += pair.value)
       if (this.state.algoName == '') {
         message.warning('Name is required')
+      }
+      else if (this.state.algoName.length > 12) {
+        message.warning('Name is too long! Use less than 12 characters')
       }
       else if (!(this.state.days > 0) && !(this.state.days <= 365)){
         message.warning('Days between rebalancing is required! (0-365)')

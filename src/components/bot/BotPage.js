@@ -8,8 +8,8 @@ import PropTypes from 'prop-types'
 import Rx from 'rxjs'
 import { withRouter } from 'react-router-dom'
 import QueueAnim from 'rc-queue-anim'
-import { saveUserSelected, saveUserFollows} from '../../actions/algo/algo_actions'
-import { checkRebalancing } from '../../api/test/test'
+import { saveUserSelected, saveUserFollows, saveUserAlgos, saveAllAlgos, } from '../../actions/algo/algo_actions'
+import { changeSelectedTab } from '../../actions/app/app_actions'
 import {
   List, Avatar, Button, Spin, Card, Divider, Icon, message, Popover
 } from 'antd'
@@ -17,7 +17,9 @@ import {
 	WhiteSpace
 } from 'antd-mobile'
 import { saveBot, getBot, activateBot, deactivateBot, deleteUserBot } from '../../api/bot/selected_bot'
-import { getUserFollows, deleteFollows, deleteAlgo} from '../../api/algo/user_algos'
+import { getUserFollows, deleteFollows, deleteAlgo, getUserAlgos, getAllAlgos} from '../../api/algo/user_algos'
+import { getUserNotifications } from '../../api/notifications/user_notifications'
+import { saveNotifications } from '../../actions/notifications/notification_actions'
 import Texty from 'rc-texty'
 import 'rc-texty/assets/index.css'
 
@@ -34,13 +36,19 @@ class BotPage extends Component {
   selectBot(algo_id) {
     console.log(algo_id, this.props.user_profile.user_id)
     console.log('=====><><><><><><=====')
-    saveBot({user_id: this.props.user_profile.user_id, algo_id: algo_id })
-      .then((data) => {
-        return getBot(this.props.user_profile.user_id)
-      })
-      .then((data) => {
-        this.props.saveUserSelected(data)
-      })
+    if (this.props.user_selected.length > 0) {
+      message.warning('Please remove currently selected strategy first')
+    }
+    else {
+      saveBot({user_id: this.props.user_profile.user_id, algo_id: algo_id })
+        .then((data) => {
+          return getBot(this.props.user_profile.user_id)
+        })
+        .then((data) => {
+          this.props.saveUserSelected(data)
+          message.success('Selected new strategy')
+        })
+    }
   }
 
 
@@ -60,12 +68,56 @@ class BotPage extends Component {
     }
   }
 
-  deleteAlg(algo_id) {
-    console.log(algo_id)
-    deleteAlgo(algo_id)
-      .then((data) => {
-        console.log(data)
+  deleteAlg(algoId, algoName) {
+    deleteAlgo({algo_id: algoId, algo_name: algoName})
+      .then(() => {
+        const a = getUserNotifications(this.props.user_profile.user_id)
+    			.then((data) => {
+    				console.log(data)
+    				this.props.saveNotifications(data)
+    			})
+        const b = getUserAlgos(this.props.user_profile.user_id)
+          .then((userAlgos) => {
+            this.props.saveUserAlgos(userAlgos)
+          })
+        const c = getBot(this.props.user_profile.user_id)
+          .then((selected) => {
+            console.log(selected)
+            this.props.saveUserSelected(selected)
+          })
+        const d = getAllAlgos()
+          .then((algoData) => {
+            this.props.saveAllAlgos(algoData)
+          })
+        return Promise.all([a, b, c, d])
       })
+      .then(() => {
+        message.success('Successfully removed strategy')
+      })
+      .catch((err) => {
+        message.error('There was an error')
+      })
+  }
+
+  renderCreatedRemove(algoId, algoName) {
+    if (this.props.user_selected.length > 0 && this.props.user_selected[0].algo_id == algoId) {
+      return (
+         <a style={{color: 'grey'}} onClick={() => message.warning('Please remove from selected first')}>
+           remove
+         </a>
+      )
+    }
+    else {
+      return (
+        <Popover
+           trigger="click"
+           placement="left"
+           content={<a>Are you sure? <br/>This will stop all bots that are currently running this strategy. <br/><Button onClick={() => this.deleteAlg(algoId, algoName)} style={{color:'red'}}>DELETE</Button></a>}
+         >
+           remove
+         </Popover>
+      )
+    }
   }
 
   renderAlgoList() {
@@ -79,16 +131,7 @@ class BotPage extends Component {
            renderItem={item => (
              <List.Item
                actions={[
-                 <a>
-                   <Popover
-                    trigger="click"
-                    placement="left"
-                    content={<a onClick={this.hide}>Are you sure? <br/>This will stop all bots that are currently running this strategy. <br/><Button onClick={() => this.deleteAlg(item.algo_id)} style={{color:'red'}}>DELETE</Button></a>}
-                  >
-                    remove
-                  </Popover>
-
-                 </a>
+                 <a>{ this.renderCreatedRemove(item.algo_id, item.algo_name)}</a>
                ]}>
                <Popover content={<p>{this.popoverAlgo(item.algo, item.algo_type)}</p>} title={item.algo_name + ' (' + item.algo_type.type + ': ' + item.algo_type.reb_type + ')'}>
                <List.Item.Meta
@@ -138,6 +181,25 @@ class BotPage extends Component {
     }
   }
 
+  renderFollowRemove(algoId, followId) {
+    //if (this.props.user_selected[0].algo_id == algoId)
+  }
+
+  renderFollowRemove(followId, algoId) {
+    if (this.props.user_selected.length > 0 && this.props.user_selected[0].algo_id == algoId) {
+      return (
+        <a style={{color: 'grey'}} onClick={() => message.warning('Please remove from selected first')}>
+          remove
+        </a>
+      )
+    }
+    else {
+      return (
+        <a onClick={() => this.removeFollow(followId)}>remove</a>
+      )
+    }
+  }
+
   renderFollowList() {
     if (this.props.user_follows.length > 0) {
       return (
@@ -147,7 +209,7 @@ class BotPage extends Component {
            itemLayout="horizontal"
            dataSource={this.props.user_follows}
            renderItem={item => (
-             <List.Item actions={[<a onClick={() => this.removeFollow(item.follow_id)}>remove</a>]}>
+             <List.Item actions={[<a>{this.renderFollowRemove(item.follow_id, item.algo_id)}</a>]}>
               <Popover content={<p>{this.popoverAlgo(item.algo, item.algo_type)}</p>} title={item.algo_name + ' (' + item.algo_type.type + ': ' + item.algo_type.reb_type + ')'}>
                <List.Item.Meta
                  avatar={<Avatar src="https://image.ibb.co/fVto1o/784915.jpg" />}
@@ -214,13 +276,16 @@ class BotPage extends Component {
     if (this.props.user_selected[0].active == false) {
       return <Button type='primary' loading={this.state.activatedButton} style={{color: this.state.color2}} onClick={() => this.activate()}>Activate Strategy</Button>
     }
-    else if (this.props.user_selected[0].active == true){
-      return <Button type='primary' loading={this.state.activatedButton} onClick={() => this.deactivate()}>Deactivate Strategy</Button>
+    else if (this.props.user_selected[0].algo_type.reb_type == 'rank' && this.props.user_selected[0].active == true){
+      return <Button type='default' loading={this.state.activatedButton} onClick={() => this.deactivate()}>Deactivate Strategy</Button>
+    }
+    else if (this.props.user_selected[0].algo_type.reb_type == 'coin' && this.props.user_selected[0].active == true){
+      return <Button type='primary' loading={this.state.activatedButton} disabled='true'>Portfolio Updated</Button>
     }
   }
 
   removeSelected() {
-    if (this.props.user_selected[0].active) {
+    if (this.props.user_selected[0].active && this.props.user_selected[0].algo_type.reb_type == 'rank') {
       message.warning('Your strategy is active, please deactivate before removing')
     }
     else {
@@ -261,16 +326,12 @@ class BotPage extends Component {
       return (
         <div>
           <center>
-            <p>No strategy currently selected. Discover strategies or create your own. <Button>Strategy Page</Button></p>
+            <p>No strategy currently selected. Discover strategies or create your own. <Button onClick={() => this.props.changeSelectedTab('strategy')}>Strategy Page</Button></p>
           </center>
         </div>
       )
     }
 
-  }
-
-  runtest() {
-    checkRebalancing()
   }
 
   renderAlgo() {
@@ -281,7 +342,6 @@ class BotPage extends Component {
 				style={comStyles().scroll}
 				bordered={false}
 			>
-        <Button onClick={() => this.runtest()}>test</Button>
 				<QueueAnim type="bottom" component="div">
         {
           this.renderHeader()
@@ -291,11 +351,27 @@ class BotPage extends Component {
           this.renderSelectedBot()
         }
 				<Divider>My Strategies</Divider>
-        <p><b>Created</b></p>
+        <p>
+          <Popover
+             placement="top"
+             title={<a>Strategies created by you</a>}
+             content={<a>Deleting your strategies will stop all active bots following it.</a>}
+           >
+            <b>Created</b>
+          </Popover>
+        </p>
 				{
 					this.renderAlgoList()
 				}
-        <p style={{marginTop: '3%'}}><b>Following</b></p>
+        <p style={{marginTop: '3%'}}>
+          <Popover
+             placement="top"
+             title={<a>Strategies you are following</a>}
+             content={<a>If the owner deletes a strategy you are following, it will be removed from both your selected and followings.</a>}
+           >
+            <b>Following</b>
+          </Popover>
+        </p>
         {
           this.renderFollowList()
         }
@@ -326,6 +402,10 @@ BotPage.propTypes = {
 	loading_complete: PropTypes.bool.isRequired,
   saveUserSelected: PropTypes.func.isRequired,
   saveUserFollows: PropTypes.func.isRequired,
+  saveNotifications: PropTypes.func.isRequired,
+  saveUserAlgos: PropTypes.func.isRequired,
+  changeSelectedTab: PropTypes.func.isRequired,
+  saveAllAlgos: PropTypes.func.isRequired,
 }
 
 // for all optional props, define a default value
@@ -343,6 +423,7 @@ const mapReduxToProps = (redux) => {
     user_algos: redux.algos.user_algos,
     user_selected: redux.algos.user_selected,
     user_follows: redux.algos.user_follows,
+
 	}
 }
 
@@ -350,7 +431,11 @@ const mapReduxToProps = (redux) => {
 export default withRouter(
 	connect(mapReduxToProps, {
     saveUserSelected,
-    saveUserFollows
+    saveUserFollows,
+    saveNotifications,
+    saveUserAlgos,
+    changeSelectedTab,
+    saveAllAlgos,
 	})(RadiumHOC)
 )
 
