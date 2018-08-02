@@ -162,6 +162,7 @@ const comStyles = (menu_hidden) => {
       maxWidth: '20%',
     }
   }
+  let sw = screen.width - 150
 	return {
 		container: {
       display: 'flex',
@@ -177,14 +178,14 @@ const comStyles = (menu_hidden) => {
     },
     menuContainer: {
       minWidth: '150px',
-      maxWidth: '12%',
+      maxWidth: '150px',
     },
     contentContainer: {
       display: 'flex',
       flexDirection: 'column',
       maxHeight: '93vh',
-      minWidth: '88%',
-      maxWidth: '40%',
+      minWidth: sw,
+      maxWidth: sw,
       // overflowY: 'scroll',
       // ...attrs,
     }
