@@ -37,22 +37,27 @@ class LandingPage extends Component {
 
 					<div style={comStyles().partOne}>
 						<div style={comStyles().titleOne}>
-							<div style={comStyles().title} onClick={() => console.log(CryptoCowards)}>CryptoCowards</div>
+							<h1 style={comStyles().title} onClick={() => console.log(CryptoCowards)}>CryptoCowards</h1>
 							<div style={{fontSize:'20px', marginTop: '1%', cursor: 'pointer'}} onClick={() => this.props.history.push('/login')}>Sign In</div>
 						</div>
 
 						<div style={ screen.width >= 1000 ? comStyles().mainOneLarge : comStyles().mainOneSmall}>
 							<div style={comStyles().infoOne}>
-								<div style={ screen.width >= 660 ? comStyles().topicOneL : comStyles().topicOneS}>
+								<h1 style={ screen.width >= 660 ? comStyles().topicOneL : comStyles().topicOneS}>
 									Automated cryptocurrency trading using proven strategies
-								</div>
-								<div style={ screen.width >= 660 ? comStyles().textOneL : comStyles().textOneS}>
+								</h1>
+								<div>
 									<br/>
-									Make returns like a professional cryptocurrency trader by mimicing their portfolio allocations <br/><br/>
-
-									Quickly and easily rebalance your Binance allocations into predetermined allocations by other traders or create your own strategies <br/><br/>
-
-									Run or create your own cryptocurrency index funds by setting automated rebalancing schedules
+									<h2 style={ screen.width >= 660 ? comStyles().textOneL : comStyles().textOneS}>
+										Make returns like professional cryptocurrency traders by mimicing their portfolio allocations
+									</h2>
+									<br/>
+									<h2 style={ screen.width >= 660 ? comStyles().textOneL : comStyles().textOneS}>
+										Quickly and easily rebalance Binance portfolios into selected cryptocurrencies
+									</h2><br/>
+									<h2 style={ screen.width >= 660 ? comStyles().textOneL : comStyles().textOneS}>
+										Build and run your own cryptocurrency index funds by setting automated rebalancing schedules
+									</h2>
 								</div>
 								<div style={{marginTop: '5%', marginBottom: '5%'}}>
 									<Button style={{marginRight: '5%'}} onClick={() => this.props.history.push('/login')} inline type="default">Sign in</Button> &nbsp;
@@ -74,19 +79,19 @@ class LandingPage extends Component {
 						</div>
 						<div style={ screen.width >= 800 ? comStyles().mainTwoLarge : comStyles().mainTwosmall} >
 							<div style={ screen.width >= 800 ? comStyles().textTwoLarge : comStyles().textTwoSmall}>
-								<div style={comStyles().stepTitle}>1) A Gmail account</div>
+								<h3 style={comStyles().stepTitle}>1) A Gmail account</h3>
 								<img src={gmailimg} width={screen.width >= 800 ? screen.width / 5 : screen.width / 2 }/>
-								<p style={{marginTop: '5%'}}> Use your Gmail account to sign in. No other registration is required.</p>
+								<h4 style={comStyles().stepDescriptions}> Use your Gmail account to sign in. No other registration is required.</h4>
 							</div>
 							<div style={screen.width >= 800 ? comStyles().textTwoLarge : comStyles().textTwoSmall}>
-								<div style={comStyles().stepTitle}>2) A Binance account</div>
+								<h3 style={comStyles().stepTitle}>2) A Binance account</h3>
 								<img src={binanceimg} width={screen.width >= 800 ? screen.width / 5 : screen.width / 2 }/>
-								<p style={{marginTop: '5%'}}>Your Binance trade-only API keys are needed for our bots to carry out strategies on your behalf.</p>
+								<h4 style={comStyles().stepDescriptions}>Your Binance trade-only API keys are needed for our bots to carry out strategies on your behalf.</h4>
 							</div>
 							<div style={screen.width >= 800 ? comStyles().textTwoLarge : comStyles().textTwoSmall}>
-								<div style={comStyles().stepTitle}>3) $300 in cryptocurrency</div>
+								<h3 style={comStyles().stepTitle}>3) $300 in cryptocurrency </h3>
 								<img src={btclogoimg} width={screen.width >= 800 ? screen.width / 5 : screen.width / 2 }/>
-								<p style={{marginTop: '5%'}}>To cover Binance transaction fees required for every trade, we reccomend users to have over $300 worth of cryptocurrencies. </p>
+								<h4 style={comStyles().stepDescriptions}>To cover Binance transaction fees required for every trade, we reccomend users to have over $300 worth of cryptocurrencies. </h4>
 							</div>
 						</div>
 					</div>
@@ -159,6 +164,7 @@ const comStyles = () => {
 		title: {
 			fontSize: '35px',
 			fontWeight: 'bold',
+			color: 'white',
       fontFamily: `'Reem Kufi', sans-serif`,
 		},
 		mainOneLarge: {
@@ -177,21 +183,25 @@ const comStyles = () => {
 		},
     topicOneL: {
 			fontSize: '35px',
+			color: 'white',
 			fontWeight: 'bold',
       fontFamily: 'Sans-serif',
 		},
 		topicOneS: {
 			fontSize: '25px',
+			color: 'white',
 			fontWeight: 'bold',
       fontFamily: 'Sans-serif',
 		},
 		textOneL: {
 			fontSize:'20px',
 			marginLeft: '10px',
+			color: 'white',
 			marginRight: '10px'
 		},
 		textOneS: {
 			fontSize:'14px',
+			color: 'white',
 			marginLeft: '10px',
 			marginRight: '10px'
 		},
@@ -243,9 +253,14 @@ const comStyles = () => {
 			marginTop: '5%',
 		},
 		stepTitle: {
+			color: '#fe8c00',
 			fontSize: '20px',
 			fontWeight: 'bold',
 			marginBottom: '5%',
+		},
+		stepDescriptions: {
+			color: '#fe8c00',
+			marginTop: '5%',
 		}
 	}
 }
